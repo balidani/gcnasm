@@ -11,7 +11,7 @@
 
 #include "isa_instr.h"
 
-isa_instr isa_instr_list[] = 
+const isa_instr isa_instr_list[] = 
 {
 	{"S_ADD_U32",        0x80000000, SOP2},
 	{"S_SUB_U32",        0x80800000, SOP2},
@@ -58,4 +58,4 @@ isa_instr isa_instr_list[] =
 	{"S_ABSDIFF_I32",    0x96000000, SOP2}
 };
 
-int isa_instr_count = sizeof(isa_instr_list) / sizeof(isa_instr);
+const int isa_instr_count = sizeof(isa_instr_list) / sizeof(isa_instr);

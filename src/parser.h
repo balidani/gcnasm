@@ -9,10 +9,15 @@
  * modification, are permitted.
  */
 
- #include "isa_instr.h"
+#include "isa_instr.h"
+#include "error.h"
 
 void parseFile(const char *input, const char *output);
+
 void parseLine(char *line);
 
 void parseSOP2(isa_instr instr, char *line);
+
 isa_operand parseOperand(char *dst);
+
+void setLiteralOperand(isa_op_code *op_code, isa_operand operand);

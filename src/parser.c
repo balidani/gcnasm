@@ -107,9 +107,8 @@ void parseSOP2(isa_instr instr, char *line)
 	char *dst_str, *src1_str, *src0_str;	// Raw strings
 	isa_operand dst_op, src1_op, src0_op;	// ISA operand structs
 
-	uint32_t op_code = instr.op_code;
-	uint32_t op_lit = 0;
-	int op_lit_set = 0;
+	isa_op_code op_code;
+
 
 	// Parse dst, src1, src0
 	while (strlen(dst_str = strsep(&line, field_delimiter)) == 0);
@@ -121,55 +120,39 @@ void parseSOP2(isa_instr instr, char *line)
 		src0_str[strlen(src0_str)-1] = '\0';
 
 	// Parse operands
-	// These will probably need to be moved to separate functions
+	
+	op_code.code = instr.op_code;
+	op_code.literal_set = 0;
 
 	// SDST
 	dst_op = parseOperand(dst_str);
 
-	if (src1_op.type == LITERAL)
-	{
-		// Error
-	}
+	if (src1_op.type < SDST_OPERAND_TRESHOLD)
+		error("incorrect value for SDST operand");
 
-	op_code |= dst_op.op_code << 16;
+	op_code.code |= dst_op.op_code << 16;
 
 	// SSRC1
 	src1_op = parseOperand(src1_str);
 
 	if (src1_op.type == LITERAL)
-	{
-		if (op_lit_set)
-		{
-			// Error
-		}
+		setLiteralOperand(&op_code, src1_op);
 
-		op_lit_set = 1;
-		op_lit = src1_op.value;
-	}
-
-	op_code |= src1_op.op_code << 8;
+	op_code.code |= src1_op.op_code << 8;
 
 	// SSRC0
 	src0_op = parseOperand(src0_str);
 
 	if (src0_op.type == LITERAL)
+		setLiteralOperand(&op_code, src0_op);
+
+	op_code.code |= src0_op.op_code;	
+
+	printf("0x%08x", op_code.code);
+
+	if (op_code.literal_set)
 	{
-		if (op_lit_set)
-		{
-			// Error
-		}
-
-		op_lit_set = 1;
-		op_lit = src0_op.value;
-	}
-
-	op_code |= src0_op.op_code;	
-
-	printf("0x%08x", op_code);
-
-	if (op_lit_set)
-	{
-		printf(" 0x%08x\n", op_lit);
+		printf(" 0x%08x\n", op_code.literal);
 	}
 	else
 	{
@@ -182,62 +165,77 @@ void parseSOP2(isa_instr instr, char *line)
  * 
  * Only the SOP2 format is supported for now
  */
-isa_operand parseOperand(char *dst)
+isa_operand parseOperand(char *op_str)
 {
 	isa_operand result;
 	char *end;
 	
 	// Only SGPRs and literals supported for now
 
-	if (tolower(dst[0]) == 's')
+	if (tolower(op_str[0]) == 's')
 	{
-		result.value = strtol((const char*) dst+1, &end, 10);
+		result.value = strtol((const char*) op_str+1, &end, 10);
 
-		if (!(*end))
-		{
-			result.op_code = result.value;
-			result.type = SGPR;
+		if (*end)
+			error("parsing operand (SGPR value)");
 
-			return result;
-		} 
+		if (result.value < 0 || result.value > 103)
+			error("invalid SGPR number");
 
+		result.op_code = result.value;
+		result.type = SGPR;
+
+		return result; 
 	}
 	else
 	{
-		if (strncmp(dst, "0x", 2) == 0)
+		if (strncmp(op_str, "0x", 2) == 0)
 		{
-			result.value = strtol((const char*) dst+2, &end, 16);
+			result.value = strtol((const char*) op_str+2, &end, 16);
 		}
 		else
 		{
-			result.value = strtol((const char*) dst, &end, 10);
+			result.value = strtol((const char*) op_str, &end, 10);
 		}
 
-		if (!(*end))
+		if (*end)
+			error("parsing operand (literal value)");
+
+		if (result.value >= 0 && result.value <= 64)
 		{
-			if (result.value >= 0 && result.value <= 64)
-			{
-				result.op_code = 128 + result.value;
-				result.type = CONST_POS;
-			}
-			else if (result.value >= -16 && result.value <= -1)
-			{
-				result.op_code = 192 + (-result.value);
-				result.type = CONST_NEG;
-			}
-			else
-			{
-				result.op_code = 0xFF;
-				result.type = LITERAL;
-			}
-
-			return result;
+			result.op_code = 128 + result.value;
+			result.type = CONST_POS;
 		}
+		else if (result.value >= -16 && result.value <= -1)
+		{
+			result.op_code = 192 + (-result.value);
+			result.type = CONST_NEG;
+		}
+		else
+		{
+			result.op_code = 0xFF;
+			result.type = LITERAL;
+		}
+
+		return result;
 	}
+
+	// At this stage this is unreachable code
+
+	warning("unsupported operant type");
 
 	result.op_code = 0;
 	result.type = ERROR;
 	result.value = 0;
 
 	return result;
+}
+
+void setLiteralOperand(isa_op_code *op_code, isa_operand operand)
+{
+	if (op_code->literal_set)
+		error("multiple literal values are unsupported (TODO: see if this is possible)");
+	
+	op_code->literal_set = 1;
+	op_code->literal = operand.value;
 }
