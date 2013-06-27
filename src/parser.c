@@ -204,12 +204,12 @@ isa_operand parseOperand(char *op_str)
 		if (result.value >= 0 && result.value <= 64)
 		{
 			result.op_code = 128 + result.value;
-			result.type = CONST_POS;
+			result.type = INL_POS;
 		}
 		else if (result.value >= -16 && result.value <= -1)
 		{
 			result.op_code = 192 + (-result.value);
-			result.type = CONST_NEG;
+			result.type = INL_NEG;
 		}
 		else
 		{
@@ -222,7 +222,7 @@ isa_operand parseOperand(char *op_str)
 
 	// At this stage this is unreachable code
 
-	warning("unsupported operant type");
+	warning("unsupported operand type");
 
 	result.op_code = 0;
 	result.type = ERROR;
@@ -234,7 +234,7 @@ isa_operand parseOperand(char *op_str)
 void setLiteralOperand(isa_op_code *op_code, isa_operand operand)
 {
 	if (op_code->literal_set)
-		error("multiple literal values are unsupported (TODO: see if this is possible)");
+		error("at most one literal constant can be used");
 	
 	op_code->literal_set = 1;
 	op_code->literal = operand.value;

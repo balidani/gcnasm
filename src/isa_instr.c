@@ -1,7 +1,7 @@
 /*
  * AMD GCN ISA Assembler
  *
- * GCN ISA structures
+ * GCN ISA instruction structures
  *
  * This software is Copyright 2013, Daniel Bali <balijanosdaniel at gmail.com>,
  * and it is hereby released to the general public under the following terms:
