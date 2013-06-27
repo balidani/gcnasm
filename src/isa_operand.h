@@ -30,7 +30,7 @@ typedef enum
 	// EXEC
 	EXEC_LO, EXEC_HI,
 	// Zero
-	ZERO,
+	ZERO = SDST_OPERAND_TRESHOLD,
 	// Positive inline constant 1 - 64
 	INL_POS,
 	// Negative inline constant -1 - -16 
@@ -49,26 +49,32 @@ typedef enum
 	// Literal constant
 	LITERAL,
 	ERROR
+} isa_operand_type_enum;
+
+typedef struct
+{
+	const char *name;
+	uint8_t op_code;
+	isa_operand_type_enum type;
 } isa_operand_type;
 
 typedef struct
 {
-	uint8_t op_code;		// Generated Opcode (stub)
-	uint32_t value;			// Literal constant value
-	isa_operand_type type;	// Operand type
+	uint8_t op_code;			// Generated Opcode (stub)
+	uint32_t value;				// Literal constant value
+	isa_operand_type op_type;	// Operand type
 } isa_operand;
 
-// This won't be used for now
-/*
-typedef struct
-{
-	const char *name;		// Name of the operand
-	uint8_t op_code;		// Generated Opcode (stub)
-	uint32_t literal_value;	// Literal constant value
-	isa_operand_type type;	// Operand type
-	int is_mapped;			// Operand type should be mapped (e.g. SGPRs)
-} isa_operand;
 
-extern const isa_operand isa_operand_list[];
-extern const int isa_operand_count;
-*/
+extern const isa_operand_type isa_simple_operand_list[];
+extern const int isa_simple_operand_count;
+extern const isa_operand_type isa_mapped_operand_list[];
+extern const int isa_mapped_operand_count;
+
+// Do we need this? Surely there is a better way. (TODO)
+#define SGPR_OP 	(isa_mapped_operand_list[0])
+#define TTMP_OP 	(isa_mapped_operand_list[1])
+#define ZERO_OP 	(isa_mapped_operand_list[2])
+#define INL_POS_OP 	(isa_mapped_operand_list[3])
+#define INL_NEG_OP 	(isa_mapped_operand_list[4])
+#define LITERAL_OP 	(isa_mapped_operand_list[5])

@@ -127,7 +127,7 @@ void parseSOP2(isa_instr instr, char *line)
 	// SDST
 	dst_op = parseOperand(dst_str);
 
-	if (src1_op.type < SDST_OPERAND_TRESHOLD)
+	if (dst_op.op_type.type >= SDST_OPERAND_TRESHOLD)
 		error("incorrect value for SDST operand");
 
 	op_code.code |= dst_op.op_code << 16;
@@ -135,7 +135,7 @@ void parseSOP2(isa_instr instr, char *line)
 	// SSRC1
 	src1_op = parseOperand(src1_str);
 
-	if (src1_op.type == LITERAL)
+	if (src1_op.op_type.type == LITERAL)
 		setLiteralOperand(&op_code, src1_op);
 
 	op_code.code |= src1_op.op_code << 8;
@@ -143,7 +143,7 @@ void parseSOP2(isa_instr instr, char *line)
 	// SSRC0
 	src0_op = parseOperand(src0_str);
 
-	if (src0_op.type == LITERAL)
+	if (src0_op.op_type.type == LITERAL)
 		setLiteralOperand(&op_code, src0_op);
 
 	op_code.code |= src0_op.op_code;	
@@ -169,11 +169,25 @@ isa_operand parseOperand(char *op_str)
 {
 	isa_operand result;
 	char *end;
-	
-	// Only SGPRs and literals supported for now
+	int i;
+
+	// Look up simple (built-in) operand types
+	for (i = 0; i < isa_simple_operand_count; ++i)
+		if (strncmp(op_str, isa_simple_operand_list[i].name, 
+				strlen(isa_simple_operand_list[i].name)) == 0)
+			break;
+
+	if (i < isa_simple_operand_count)
+	{
+		result.op_code = isa_simple_operand_list[i].op_code;
+		result.op_type = isa_simple_operand_list[i];
+		return result;
+	}
+
 
 	if (tolower(op_str[0]) == 's')
 	{
+		// Parse SGPR operand
 		result.value = strtol((const char*) op_str+1, &end, 10);
 
 		if (*end)
@@ -182,8 +196,24 @@ isa_operand parseOperand(char *op_str)
 		if (result.value < 0 || result.value > 103)
 			error("invalid SGPR number");
 
-		result.op_code = result.value;
-		result.type = SGPR;
+		result.op_code = SGPR_OP.op_code + result.value;
+		result.op_type = SGPR_OP;
+
+		return result; 
+	}
+	else if (tolower(op_str[0]) == 't')
+	{
+		// Parse TTMP operand
+		result.value = strtol((const char*) op_str+1, &end, 10);
+
+		if (*end)
+			error("parsing operand (TTMP value)");
+
+		if (result.value < 0 || result.value > 11)
+			error("invalid TTMP number");
+
+		result.op_code = TTMP_OP.op_code + result.value;
+		result.op_type = TTMP_OP;
 
 		return result; 
 	}
@@ -201,20 +231,26 @@ isa_operand parseOperand(char *op_str)
 		if (*end)
 			error("parsing operand (literal value)");
 
-		if (result.value >= 0 && result.value <= 64)
+		if (result.value == 0)
 		{
-			result.op_code = 128 + result.value;
-			result.type = INL_POS;
+
+			result.op_code = ZERO_OP.op_code;
+			result.op_type = ZERO_OP;
+		}
+		else if (result.value > 0 && result.value <= 64)
+		{
+			result.op_code = INL_POS_OP.op_code + result.value - 1;
+			result.op_type = INL_POS_OP;
 		}
 		else if (result.value >= -16 && result.value <= -1)
 		{
-			result.op_code = 192 + (-result.value);
-			result.type = INL_NEG;
+			result.op_code = INL_NEG_OP.op_code + (-result.value) - 1;
+			result.op_type = INL_NEG_OP;
 		}
 		else
 		{
-			result.op_code = 0xFF;
-			result.type = LITERAL;
+			result.op_code = LITERAL_OP.op_code;
+			result.op_type = LITERAL_OP;
 		}
 
 		return result;
@@ -222,12 +258,7 @@ isa_operand parseOperand(char *op_str)
 
 	// At this stage this is unreachable code
 
-	warning("unsupported operand type");
-
-	result.op_code = 0;
-	result.type = ERROR;
-	result.value = 0;
-
+	error("unsupported operand type");
 	return result;
 }
 
