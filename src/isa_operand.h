@@ -9,7 +9,15 @@
  * modification, are permitted.
  */
 
+#ifndef _ISA_OPERAND_H
+#define _ISA_OPERAND_H
+
 #include <stdint.h>
+
+#include "error.h"
+
+// These are still SOP2 dependent,
+// and will probably be moved/changed
 
 #define SDST_OPERAND_TRESHOLD 128
 
@@ -65,11 +73,18 @@ typedef struct
 	isa_operand_type op_type;	// Operand type
 } isa_operand;
 
+typedef struct {
+	uint32_t code;				// 32 bit opcode value
+	uint32_t literal;			// Optional 32 bit literal value
+	int literal_set;			// Flag noting the presence of a literal
+} isa_op_code;
 
 extern const isa_operand_type isa_simple_operand_list[];
 extern const int isa_simple_operand_count;
 extern const isa_operand_type isa_mapped_operand_list[];
 extern const int isa_mapped_operand_count;
+
+void setLiteralOperand(isa_op_code *op_code, isa_operand operand);
 
 // Do we need this? Surely there is a better way. (TODO)
 #define SGPR_OP 	(isa_mapped_operand_list[0])
@@ -78,3 +93,5 @@ extern const int isa_mapped_operand_count;
 #define INL_POS_OP 	(isa_mapped_operand_list[3])
 #define INL_NEG_OP 	(isa_mapped_operand_list[4])
 #define LITERAL_OP 	(isa_mapped_operand_list[5])
+
+#endif

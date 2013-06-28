@@ -9,17 +9,17 @@
  * modification, are permitted.
  */
 
+#ifndef _PARSER_H
+#define _PARSER_H
+
 #include <stdint.h>
 
 #include "isa_instr.h"
 #include "isa_operand.h"
 #include "error.h"
+#include "sop2.h"
 
 void parseFile(const char *input, const char *output);
-
 void parseLine(char *line);
 
-void parseSOP2(isa_instr instr, char *line);
-
-isa_operand parseOperand(char *dst);
-void setLiteralOperand(isa_op_code *op_code, isa_operand operand);
+#endif

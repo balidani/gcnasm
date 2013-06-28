@@ -1,0 +1,42 @@
+;
+; AMD GCN ISA Assembler
+;
+; Test assembly file
+;
+; This software is Copyright 2013, Daniel Bali <balijanosdaniel at gmail.com>,
+; and it is hereby released to the general public under the following terms:
+; Redistribution and use in source and binary forms, with or without
+; modification, are permitted.
+;
+
+; Basic tests, testing core functionality, SOP2 format
+
+S_XOR_B32	S0, S1, S2			; Basic test
+S_ADD_I32	S3, S4, 255			; Large literal test
+S_ADD_I32	S3, S4, 12			; Small literal test
+S_ADD_I32	S3, S4, -255		; Large negative literal test
+S_ADD_I32	S3, S4, -12			; Small negative literal test
+S_MIN_U32	S5, S6, 0xABCD
+S_MIN_U32	S7, 0xFEDC, S8
+S_LSHL_B32	S9, 0xCCCC, S10
+
+; Special operand type tests
+S_NOR_B64	S11, S12, VCC_LO	; VCC_LO operand test
+S_NOR_B64	S13, VCC_HI, S13	; VCC_HI operand test
+S_NOR_B64	S11, S12, TBA_LO	; TBA_LO operand test
+S_NOR_B64	S13, TBA_HI, S13	; TBA_HI operand test
+S_NOR_B64	S11, S12, TMA_LO	; TMA_LO operand test
+S_NOR_B64	S13, TMA_HI, S13	; TMA_HI operand test
+S_SUBB_U32	S16, t0, S17		; TTMP0 test
+S_SUBB_U32	S18, S19, t11		; TTMP11 test
+
+; Assembly parser test
+; Empty line test 1
+ ; Empty line test 2
+	; Empty line test 3
+
+ 
+	
+;
+
+; VOP2 tests

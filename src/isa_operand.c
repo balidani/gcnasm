@@ -53,4 +53,13 @@ const isa_operand_type isa_mapped_operand_list[] =
 };
 
 const int isa_mapped_operand_count = sizeof(isa_mapped_operand_list) 
-	/ sizeof(isa_operand_type);;
+	/ sizeof(isa_operand_type);
+
+void setLiteralOperand(isa_op_code *op_code, isa_operand operand)
+{
+	if (op_code->literal_set)
+		ERROR("at most one literal constant can be used");
+	
+	op_code->literal_set = 1;
+	op_code->literal = operand.value;
+}

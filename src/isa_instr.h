@@ -9,6 +9,9 @@
  * modification, are permitted.
  */
 
+#ifndef _ISA_INSTR_H
+#define _ISA_INSTR_H
+
 #include <stdint.h>
 
 typedef enum 
@@ -39,11 +42,7 @@ typedef struct
 	isa_instr_enc encoding;	// Opcode encoding type
 } isa_instr;
 
-typedef struct {
-	uint32_t code;			// 32 bit opcode value
-	uint32_t literal;		// Optional 32 bit literal value
-	int literal_set;		// Flag to note the presence of a literal value
-} isa_op_code;
-
 extern const isa_instr isa_instr_list[];
 extern const int isa_instr_count;
+
+#endif

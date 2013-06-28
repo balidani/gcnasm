@@ -1,7 +1,7 @@
 /*
  * AMD GCN ISA Assembler
  *
- * Simple error handler
+ * SOP2 instruction parser
  *
  * This software is Copyright 2013, Daniel Bali <balijanosdaniel at gmail.com>,
  * and it is hereby released to the general public under the following terms:
@@ -9,6 +9,14 @@
  * modification, are permitted.
  */
 
+#ifndef _SOP2_H
+#define _SOP2_H
+
+#include "isa_instr.h"
+#include "isa_operand.h"
 #include "error.h"
 
-// Empty for now
+void parseSOP2Instruction(isa_instr instr, char **args);
+isa_operand parseSOP2Operand(char *op_str);
+
+#endif
