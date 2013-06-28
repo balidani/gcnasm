@@ -184,7 +184,7 @@ int main(int argc, char* argv[])
 		uint8_t *binary;
 		size_t binary_size;
 
-		printf("Loading kernel from binary\n");
+		printf("[*] Loading kernel from binary\n");
 
 		fseek(fp, 0, SEEK_END);
 		binary_size = ftell(fp);
