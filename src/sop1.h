@@ -1,7 +1,7 @@
 /*
  * AMD GCN ISA Assembler
  *
- * Parser module
+ * SOP1 instruction parser
  *
  * This software is Copyright 2013, Daniel Bali <balijanosdaniel at gmail.com>,
  * and it is hereby released to the general public under the following terms:
@@ -9,24 +9,13 @@
  * modification, are permitted.
  */
 
-#ifndef _PARSER_H
-#define _PARSER_H
-
-#include <stdint.h>
+#ifndef _SOP1_H
+#define _SOP1_H
 
 #include "isa_instr.h"
 #include "isa_operand.h"
-#include "isa_format.h"
 #include "error.h"
 
-#include "sop2.h"
-#include "sop1.h"
-#include "vop2.h"
-
-void parseFile(const char *input, const char *output);
-
-isa_op_code* parseLine(char *line);
-
-void parseToken(char **line, char **res);
+isa_op_code parseSOP1(isa_instr instr, char **args);
 
 #endif

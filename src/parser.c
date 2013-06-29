@@ -176,11 +176,14 @@ isa_op_code* parseLine(char *line)
 		case SOP2: 
 			*result = parseSOP2(isa_instr_list[i], args);
 			break;
+		case SOP1:
+			*result = parseSOP1(isa_instr_list[i], args);
+			break;
 		case VOP2:
 			*result = parseVOP2(isa_instr_list[i], args);
 			break;
 		default:
-			WARNING("Unsupported encoding type for instruction '%s'", 
+			WARNING("unsupported encoding type for instruction '%s'", 
 				isa_instr_list[i].name);
 			return NULL;
 			break;
