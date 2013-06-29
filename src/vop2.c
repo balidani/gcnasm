@@ -22,7 +22,7 @@
  * 
  * MAGIC (1) | OP (6) | VDST (8) | VSRC1 (8) | SSRC0 (8) | [LITERAL (32)]
  */
-void parseVOP2Instruction(isa_instr instr, char **args)
+isa_op_code parseVOP2Instruction(isa_instr instr, char **args)
 {
 	char *vdst_str, *src0_str, *vsrc1_str; 	// And *vcc_str
 
@@ -63,16 +63,7 @@ void parseVOP2Instruction(isa_instr instr, char **args)
 
 	op_code.code |= vsrc1_op.op_code << 9;
 
-	printf("0x%08x", op_code.code);
-
-	if (op_code.literal_set)
-	{
-		printf(" 0x%08x\n", op_code.literal);
-	}
-	else
-	{
-		printf("\n");
-	}
+	return op_code;
 }
 
 /**

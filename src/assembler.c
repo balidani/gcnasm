@@ -24,7 +24,7 @@ int main(int argc, char **argv)
 		exit(EXIT_FAILURE);
 	}
 
-	parseFile("input.isa", "output.bin");
+	parseFile(argv[1], argv[2]);
 
 	exit(EXIT_SUCCESS);
 }

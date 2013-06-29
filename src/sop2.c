@@ -22,7 +22,7 @@
  * 
  * MAGIC (2) | OP (7) | SDST (7) | SSRC1 (8) | SSRC0 (8) | [LITERAL (32)]
  */
-void parseSOP2Instruction(isa_instr instr, char **args)
+isa_op_code parseSOP2Instruction(isa_instr instr, char **args)
 {
 	char *sdst_str, *ssrc1_str, *ssrc0_str;
 	isa_operand sdst_op, ssrc1_op, ssrc0_op;	// ISA operand structs
@@ -61,17 +61,7 @@ void parseSOP2Instruction(isa_instr instr, char **args)
 
 	op_code.code |= ssrc1_op.op_code << 8;
 
-	// TODO: actually save bytecode here
-	printf("0x%08x", op_code.code);
-
-	if (op_code.literal_set)
-	{
-		printf(" 0x%08x\n", op_code.literal);
-	}
-	else
-	{
-		printf("\n");
-	}
+	return op_code;
 }
 
 /**

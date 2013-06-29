@@ -16,7 +16,7 @@
 #include "isa_operand.h"
 #include "error.h"
 
-void parseSOP2Instruction(isa_instr instr, char **args);
+isa_op_code parseSOP2Instruction(isa_instr instr, char **args);
 isa_operand parseSOP2Operand(char *op_str);
 
 #endif

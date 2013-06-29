@@ -22,7 +22,9 @@
 #include "vop2.h"
 
 void parseFile(const char *input, const char *output);
-void parseLine(char *line);
+
+isa_op_code* parseLine(char *line);
+
 void parseOperand(char **line, char **res);
 
 #endif
