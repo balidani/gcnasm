@@ -16,7 +16,6 @@
 #include "isa_operand.h"
 #include "error.h"
 
-isa_op_code parseVOP2Instruction(isa_instr instr, char **args);
-isa_operand parseVOP2Operand(char *op_str, int is_src0);
+isa_op_code parseVOP2(isa_instr instr, char **args);
 
 #endif

@@ -1,7 +1,7 @@
 /*
  * AMD GCN ISA Assembler
  *
- * Parser module
+ * GCN ISA instruction formats
  *
  * This software is Copyright 2013, Daniel Bali <balijanosdaniel at gmail.com>,
  * and it is hereby released to the general public under the following terms:
@@ -9,23 +9,12 @@
  * modification, are permitted.
  */
 
-#ifndef _PARSER_H
-#define _PARSER_H
-
-#include <stdint.h>
-
-#include "isa_instr.h"
-#include "isa_operand.h"
 #include "isa_format.h"
-#include "error.h"
 
-#include "sop2.h"
-#include "vop2.h"
+const isa_format isa_format_list[] = 
+{
+	{SOP2, 3},
+	{VOP2, 3},
+};
 
-void parseFile(const char *input, const char *output);
-
-isa_op_code* parseLine(char *line);
-
-void parseToken(char **line, char **res);
-
-#endif
+const int isa_format_count = sizeof(isa_format_list) / sizeof(isa_format);

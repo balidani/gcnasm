@@ -21,10 +21,17 @@
 
 #define SDST_OPERAND_TRESHOLD 128
 
+// Do we need this? Surely there is a better way. (TODO)
+#define VGPR_OP 	(isa_mapped_operand_list[0])
+#define SGPR_OP 	(isa_mapped_operand_list[1])
+#define TTMP_OP 	(isa_mapped_operand_list[2])
+#define ZERO_OP 	(isa_mapped_operand_list[3])
+#define INL_POS_OP 	(isa_mapped_operand_list[4])
+#define INL_NEG_OP 	(isa_mapped_operand_list[5])
+#define LITERAL_OP 	(isa_mapped_operand_list[6])
+
 typedef enum 
 {
-	// Vector general-purpose registers
-	VGPR = -1,
 	// Scalar general-purpose registers
 	SGPR,
 	// VCC
@@ -58,7 +65,9 @@ typedef enum
 	SCC,
 	// Literal constant
 	LITERAL,
-	ERROR
+	ERROR,
+	// Vector general-purpose registers
+	VGPR,
 } isa_operand_type_enum;
 
 typedef struct
@@ -86,15 +95,7 @@ extern const int isa_simple_operand_count;
 extern const isa_operand_type isa_mapped_operand_list[];
 extern const int isa_mapped_operand_count;
 
+isa_operand parseOperand(char *op_str, int num_bits);
 void setLiteralOperand(isa_op_code *op_code, isa_operand operand);
-
-// Do we need this? Surely there is a better way. (TODO)
-#define VGPR_OP 	(isa_mapped_operand_list[0])
-#define SGPR_OP 	(isa_mapped_operand_list[1])
-#define TTMP_OP 	(isa_mapped_operand_list[2])
-#define ZERO_OP 	(isa_mapped_operand_list[3])
-#define INL_POS_OP 	(isa_mapped_operand_list[4])
-#define INL_NEG_OP 	(isa_mapped_operand_list[5])
-#define LITERAL_OP 	(isa_mapped_operand_list[6])
 
 #endif
