@@ -84,6 +84,8 @@ void parseFile(const char *input, const char *output)
 		if (result == NULL)
 			continue;
 
+		printf("%08x\n", result->code);
+
 		microcode[microcode_ptr++] = result->code;
 
 		if (result->literal_set)
@@ -102,16 +104,9 @@ void parseFile(const char *input, const char *output)
 
 	for (i = 0; i < microcode_ptr; ++i)
 	{
-		// Pack as little-endian value
 		uint32_t src = microcode[i];
-		uint32_t dst = (
-			((src & 0xFF) << 24)		|
-			((src & 0xFF00) << 8)		|
-			((src & 0xFF0000) >> 8)		|
-			((src & 0xFF000000) >> 24)	
-		);
 
-		if (fwrite(&dst, sizeof(uint32_t), 1, out_file) == 0)
+		if (fwrite(&src, sizeof(uint32_t), 1, out_file) == 0)
 			ERROR("writing file \"%s\"", output);
 	}
 
