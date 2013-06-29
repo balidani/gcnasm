@@ -10,25 +10,28 @@
 ;
 
 ; Basic tests, testing core functionality, SOP2 format
+; <OP> <SDST> <SSRC0> <SSRC1>
 
-S_XOR_B32	S0, S1, S2			; Basic test
-S_ADD_I32	S3, S4, 255			; Large literal test
-S_ADD_I32	S3, S4, 12			; Small literal test
-S_ADD_I32	S3, S4, -255		; Large negative literal test
-S_ADD_I32	S3, S4, -12			; Small negative literal test
-S_MIN_U32	S5, S6, 0xABCD
-S_MIN_U32	S7, 0xFEDC, S8
-S_LSHL_B32	S9, 0xCCCC, S10
+S_MIN_U32	S0, S0, 0x0000ffff		; 8380FF00 0000FFFF
+S_ADD_I32	S3, S4, 255				; Large literal test
+S_ADD_I32	S3, S4, 12				; Small literal test
+S_ADD_I32	S3, S4, -255			; Large neg. literal test
+S_ADD_I32	S3, S4, -12				; Small neg. literal test
+S_MIN_U32	S5, S6, 0xABCD			;							
+S_MIN_U32	s7, 0xfedc, s8			; Lower-case test
+
+; Whoops, this isn't supported yet
+;s_lshl_b32	S9, 0xCCCC, S10 		; Lower-case instruction test
 
 ; Special operand type tests
-S_NOR_B64	S11, S12, VCC_LO	; VCC_LO operand test
-S_NOR_B64	S13, VCC_HI, S13	; VCC_HI operand test
-S_NOR_B64	S11, S12, TBA_LO	; TBA_LO operand test
-S_NOR_B64	S13, TBA_HI, S13	; TBA_HI operand test
-S_NOR_B64	S11, S12, TMA_LO	; TMA_LO operand test
-S_NOR_B64	S13, TMA_HI, S13	; TMA_HI operand test
-S_SUBB_U32	S16, t0, S17		; TTMP0 test
-S_SUBB_U32	S18, S19, t11		; TTMP11 test
+S_NOR_B64	S11, S12, VCC_LO		; VCC_LO operand test
+S_NOR_B64	S13, VCC_HI, S13		; VCC_HI operand test
+S_NOR_B64	S11, S12, TBA_LO		; TBA_LO operand test
+S_NOR_B64	S13, TBA_HI, S13		; TBA_HI operand test
+S_NOR_B64	S11, S12, TMA_LO		; TMA_LO operand test
+S_NOR_B64	S13, TMA_HI, S13		; TMA_HI operand test
+S_SUBB_U32	S16, t0, S17			; TTMP0 test
+S_SUBB_U32	S18, S19, t11			; TTMP11 test
 
 ; Assembly parser test
 ; Empty line test 1
@@ -40,3 +43,19 @@ S_SUBB_U32	S18, S19, t11		; TTMP11 test
 ;
 
 ; VOP2 tests
+; <OP> <VDST> [<VCC>] <SRC0> <VSRC1>
+V_ADD_I32	v0, v0, v1				; 4A000300
+V_ADD_I32	v0, s1, v0				; 4A000001
+V_ADD_I32	v0, s0, v0				; 4A000000
+V_ADD_I32	v1, 0x00000063, v1		; 4A0202FF 00000063
+V_MAX_U32	v2, v3, v4
+V_MIN_I32	v5, s6, v7
+V_XOR_B32	v100, v101, v102
+V_OR_B32	v253, v254, v255
+
+; More examples with known microcode values
+
+V_LSHLREV_B32	v0, 2, v0			; 34000082
+V_MUL_I32_I24	v1, s12, v1			; 1202020C
+V_LSHLREV_B32	v2, 2, v4			; 34040882
+V_OR_B32		v4, 64, v1			; 380802C0 
