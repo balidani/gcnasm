@@ -2,7 +2,8 @@ CC = gcc
 RM = rm -f
 
 CFLAGS = -Wall
-CFILES = assembler.c error.c isa_instr.c isa_operand.c parser.c sop2.c
+CFILES = assembler.c error.c isa_instr.c isa_operand.c parser.c sop2.c \
+	vop2.c
 
 
 ASSEMBLER = ../run/assembler

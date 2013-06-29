@@ -1,7 +1,7 @@
 /*
  * AMD GCN ISA Assembler
  *
- * SOP2 instruction parser
+ * VOP2 instruction parser
  *
  * This software is Copyright 2013, Daniel Bali <balijanosdaniel at gmail.com>,
  * and it is hereby released to the general public under the following terms:
@@ -15,53 +15,54 @@
 #include <string.h>
 #include <ctype.h>
 
-#include "sop2.h"
+#include "vop2.h"
 
 /**
- * Parses instructions with a SOP2 encoding
+ * Parses instructions with a VOP2 encoding
  * 
- * MAGIC (2) | OP (7) | SDST (7) | SSRC1 (8) | SSRC0 (8) | [LITERAL (32)]
+ * MAGIC (1) | OP (6) | VDST (8) | VSRC1 (8) | SSRC0 (8) | [LITERAL (32)]
  */
-void parseSOP2Instruction(isa_instr instr, char **args)
+void parseVOP2Instruction(isa_instr instr, char **args)
 {
-	char *sdst_str, *ssrc1_str, *ssrc0_str;
-	isa_operand sdst_op, ssrc1_op, ssrc0_op;	// ISA operand structs
+	char *vdst_str, *src0_str, *vsrc1_str; 	// And *vcc_str
+
+	isa_operand vdst_op, vsrc1_op, src0_op;	// ISA operand structs
 	isa_op_code op_code;					// Generated opcode struct
-	
+
 	// Setup arguments
-	sdst_str	= args[0];
-	ssrc0_str	= args[1];
-	ssrc1_str	= args[2];
+	vdst_str	= args[0];
+	//vcc_str	= args[1]; // Not used yet
+	src0_str	= args[1];
+	vsrc1_str	= args[2];
 
 	// Parse operands
 	op_code.code = instr.op_code;
 	op_code.literal_set = 0;
 
-	// SDST
-	sdst_op = parseSOP2Operand(sdst_str);
+	// VDST
+	vdst_op = parseVOP2Operand(vdst_str, 0);
 
-	if (sdst_op.op_type.type >= SDST_OPERAND_TRESHOLD)
-		ERROR("incorrect value for SDST operand");
+	if (vdst_op.op_type.type != VGPR)
+		ERROR("VDST must be of VGPR type");
 
-	op_code.code |= sdst_op.op_code << 16;
+	op_code.code |= vdst_op.op_code << 17;
 
-	// SSRC0 - First source operand
-	ssrc0_op = parseSOP2Operand(ssrc0_str);
+	// SRC0
+	src0_op = parseVOP2Operand(src0_str, 1);
 
-	if (ssrc0_op.op_type.type == LITERAL)
-		setLiteralOperand(&op_code, ssrc0_op);
+	if (src0_op.op_type.type == LITERAL)
+		setLiteralOperand(&op_code, src0_op);
 
-	op_code.code |= ssrc0_op.op_code;	
+	op_code.code |= src0_op.op_code;	
 
-	// SSRC1 - Second source operand
-	ssrc1_op = parseSOP2Operand(ssrc1_str);
+	// VSRC1
+	vsrc1_op = parseVOP2Operand(vsrc1_str, 0);
 
-	if (ssrc1_op.op_type.type == LITERAL)
-		setLiteralOperand(&op_code, ssrc1_op);
+	if (vsrc1_op.op_type.type != VGPR)
+		ERROR("VSRC1 must be of VGPR type");
 
-	op_code.code |= ssrc1_op.op_code << 8;
+	op_code.code |= vsrc1_op.op_code << 9;
 
-	// TODO: actually save bytecode here
 	printf("0x%08x", op_code.code);
 
 	if (op_code.literal_set)
@@ -75,9 +76,14 @@ void parseSOP2Instruction(isa_instr instr, char **args)
 }
 
 /**
- * Parses SOP type operands
+ * Parses VOP type operands
+ *
+ * TODO:
+ * (Actually, there are no VOP type operands.
+ * Operand parsing will have to be moved.
+ * For now I'll stick to ugly code reuse.)
  */
-isa_operand parseSOP2Operand(char *op_str)
+isa_operand parseVOP2Operand(char *op_str, int is_src0)
 {
 	isa_operand result;
 	char *end;
@@ -96,8 +102,27 @@ isa_operand parseSOP2Operand(char *op_str)
 		return result;
 	}
 
+	if (tolower(op_str[0]) == 'v')
+	{
+		// Parse VGPR operand
+		result.value = strtol((const char*) op_str+1, &end, 10);
 
-	if (tolower(op_str[0]) == 's')
+		if (*end)
+			ERROR("parsing operand (VGPR value)");
+
+		if (result.value < 0 || result.value > 255)
+			ERROR("invalid VGPR number (%d)", result.value);
+
+		result.op_code = VGPR_OP.op_code + result.value;
+		result.op_type = VGPR_OP;
+
+		// The 9-bit SRC0 operand can represent both SGPRs and VGPRs
+		if (is_src0)
+			result.op_code += 256;
+		
+		return result; 
+	}
+	else if (tolower(op_str[0]) == 's')
 	{
 		// Parse SGPR operand
 		result.value = strtol((const char*) op_str+1, &end, 10);

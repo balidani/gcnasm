@@ -23,6 +23,8 @@
 
 typedef enum 
 {
+	// Vector general-purpose registers
+	VGPR = -1,
 	// Scalar general-purpose registers
 	SGPR,
 	// VCC
@@ -62,13 +64,13 @@ typedef enum
 typedef struct
 {
 	const char *name;
-	uint8_t op_code;
+	uint32_t op_code;
 	isa_operand_type_enum type;
 } isa_operand_type;
 
 typedef struct
 {
-	uint8_t op_code;			// Generated Opcode (stub)
+	uint32_t op_code;			// Generated Opcode (stub)
 	uint32_t value;				// Literal constant value
 	isa_operand_type op_type;	// Operand type
 } isa_operand;
@@ -87,11 +89,12 @@ extern const int isa_mapped_operand_count;
 void setLiteralOperand(isa_op_code *op_code, isa_operand operand);
 
 // Do we need this? Surely there is a better way. (TODO)
-#define SGPR_OP 	(isa_mapped_operand_list[0])
-#define TTMP_OP 	(isa_mapped_operand_list[1])
-#define ZERO_OP 	(isa_mapped_operand_list[2])
-#define INL_POS_OP 	(isa_mapped_operand_list[3])
-#define INL_NEG_OP 	(isa_mapped_operand_list[4])
-#define LITERAL_OP 	(isa_mapped_operand_list[5])
+#define VGPR_OP 	(isa_mapped_operand_list[0])
+#define SGPR_OP 	(isa_mapped_operand_list[1])
+#define TTMP_OP 	(isa_mapped_operand_list[2])
+#define ZERO_OP 	(isa_mapped_operand_list[3])
+#define INL_POS_OP 	(isa_mapped_operand_list[4])
+#define INL_NEG_OP 	(isa_mapped_operand_list[5])
+#define LITERAL_OP 	(isa_mapped_operand_list[6])
 
 #endif

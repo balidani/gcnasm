@@ -1,7 +1,7 @@
 /*
  * AMD GCN ISA Assembler
  *
- * Parser module
+ * VOP2 instruction parser
  *
  * This software is Copyright 2013, Daniel Bali <balijanosdaniel at gmail.com>,
  * and it is hereby released to the general public under the following terms:
@@ -9,20 +9,14 @@
  * modification, are permitted.
  */
 
-#ifndef _PARSER_H
-#define _PARSER_H
-
-#include <stdint.h>
+#ifndef _VOP2_H
+#define _VOP2_H
 
 #include "isa_instr.h"
 #include "isa_operand.h"
 #include "error.h"
 
-#include "sop2.h"
-#include "vop2.h"
-
-void parseFile(const char *input, const char *output);
-void parseLine(char *line);
-void parseOperand(char **line, char **res);
+void parseVOP2Instruction(isa_instr instr, char **args);
+isa_operand parseVOP2Operand(char *op_str, int is_src0);
 
 #endif

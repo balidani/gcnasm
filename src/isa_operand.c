@@ -44,6 +44,7 @@ const int isa_simple_operand_count = sizeof(isa_simple_operand_list)
 
 const isa_operand_type isa_mapped_operand_list[] = 
 {
+	{"VGPR",		0x00, VGPR			},
 	{"SGPR",		0x00, SGPR			},
 	{"TTMP",		0x70, TTMP			},
 	{"ZERO",		0x80, ZERO			},
