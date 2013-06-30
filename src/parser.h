@@ -21,6 +21,7 @@
 
 #include "sop2.h"
 #include "sop1.h"
+#include "sopc.h"
 #include "vop2.h"
 #include "vop1.h"
 
