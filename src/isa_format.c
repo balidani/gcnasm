@@ -16,6 +16,7 @@ const isa_format isa_format_list[] =
 	{SOP2, 3},
 	{SOP1, 2},
 	{VOP2, 3},
+	{VOP1, 2}
 };
 
 const int isa_format_count = sizeof(isa_format_list) / sizeof(isa_format);
