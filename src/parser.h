@@ -24,6 +24,7 @@
 #include "sopc.h"
 #include "vop2.h"
 #include "vop1.h"
+#include "vopc.h"
 
 void parseFile(const char *input, const char *output);
 

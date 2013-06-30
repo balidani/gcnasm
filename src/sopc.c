@@ -12,7 +12,7 @@
 #include "sopc.h"
 
 /**
- * Parses instructions with a SOP2 encoding
+ * Parses instructions with a SOPC encoding
  * 
  * MAGIC (9) | OP (7) | SSRC1 (8) | SSRC0 (8) | [LITERAL (32)]
  */

@@ -1,7 +1,7 @@
 /*
  * AMD GCN ISA Assembler
  *
- * VOP2 instruction parser
+ * VOPC instruction parser
  *
  * This software is Copyright 2013, Daniel Bali <balijanosdaniel at gmail.com>,
  * and it is hereby released to the general public under the following terms:
@@ -9,37 +9,27 @@
  * modification, are permitted.
  */
 
-#include "vop2.h"
+#include "vopc.h"
 
 /**
- * Parses instructions with a VOP2 encoding
+ * Parses instructions with a VOPC encoding
  * 
- * MAGIC (1) | OP (6) | VDST (8) | VSRC1 (8) | SSRC0 (9) | [LITERAL (32)]
+ * MAGIC (7) | OP (8) | VSRC1 (8) | SSRC0 (9) | [LITERAL (32)]
  */
-isa_op_code parseVOP2(isa_instr instr, char **args)
+isa_op_code parseVOPC(isa_instr instr, char **args)
 {
-	char *vdst_str, *src0_str, *vsrc1_str; 	// And *vcc_str
+	char *src0_str, *vsrc1_str;
 
-	isa_operand vdst_op, vsrc1_op, src0_op;	// ISA operand structs
-	isa_op_code op_code;					// Generated opcode struct
+	isa_operand vsrc1_op, src0_op;	// ISA operand structs
+	isa_op_code op_code;			// Generated opcode struct
 
 	// Setup arguments
-	vdst_str	= args[0];
-	//vcc_str	= args[1]; // Not used yet
-	src0_str	= args[1];
-	vsrc1_str	= args[2];
+	src0_str	= args[0];
+	vsrc1_str	= args[1];
 
 	// Parse operands
 	op_code.code = instr.op_code;
 	op_code.literal_set = 0;
-
-	// VDST
-	vdst_op = parseOperand(vdst_str, 8);
-
-	if (vdst_op.op_type.type != VGPR)
-		ERROR("VDST must be of VGPR type");
-
-	op_code.code |= vdst_op.op_code << 17;
 
 	// SRC0
 	src0_op = parseOperand(src0_str, 9);
