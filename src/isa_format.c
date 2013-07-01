@@ -16,6 +16,7 @@ const isa_format isa_format_list[] =
 	{SOP2, 3},
 	{SOP1, 2},
 	{SOPC, 2},
+	{SMRD, 3},
 	{VOP2, 3},
 	{VOP1, 2},
 	{VOPC, 2}

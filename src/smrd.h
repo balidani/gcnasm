@@ -1,7 +1,7 @@
 /*
  * AMD GCN ISA Assembler
  *
- * Parser module
+ * SMRD instruction parser
  *
  * This software is Copyright 2013, Daniel Bali <balijanosdaniel at gmail.com>,
  * and it is hereby released to the general public under the following terms:
@@ -9,28 +9,19 @@
  * modification, are permitted.
  */
 
-#ifndef _PARSER_H
-#define _PARSER_H
-
-#include <stdint.h>
+#ifndef _SMRD_H
+#define _SMRD_H
 
 #include "isa_instr.h"
 #include "isa_operand.h"
-#include "isa_format.h"
 #include "error.h"
 
-#include "sop2.h"
-#include "sop1.h"
-#include "sopc.h"
-#include "smrd.h"
-#include "vop2.h"
-#include "vop1.h"
-#include "vopc.h"
+typedef enum {
+	SDST,
+	SBASE,
+	OFFSET
+} smrd_operand;
 
-void parseFile(const char *input, const char *output);
-
-isa_op_code* parseLine(char *line);
-
-void parseToken(char **line, char **res);
+isa_op_code* parseSMRD(isa_instr instr, char **args);
 
 #endif

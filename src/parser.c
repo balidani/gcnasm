@@ -93,8 +93,6 @@ void parseFile(const char *input, const char *output)
 			microcode[microcode_ptr++] = result->literal;
 			// printf("%08x\n", result->literal);
 		}
-	//	else
-	//		microcode[microcode_ptr++] = SOME_MAGIC_VALUE - it is better than random value
 
 		free(result);
 	}
@@ -186,6 +184,9 @@ isa_op_code* parseLine(char *line)
 			break;
 		case SOPC:
 			result = parseSOPC(isa_instr_list[i], args);
+			break;
+		case SMRD:
+			result = parseSMRD(isa_instr_list[i], args);
 			break;
 		case VOP2:
 			result = parseVOP2(isa_instr_list[i], args);

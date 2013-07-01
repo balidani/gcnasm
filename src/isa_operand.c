@@ -105,18 +105,48 @@ isa_operand* parseOperand(char *op_str, int num_bits)
 	}
 	else if (tolower(op_str[0]) == 's')
 	{
-		// Parse SGPR operand
-		result->value = strtol((const char*) op_str+1, &end, 10);
+		if (op_str[1] == '[')
+		{
+			// Parse SGPR range
+			const char *delimiter = ":]";
+			char *token;
 
-		if (*end)
-			ERROR("parsing operand (SGPR value)");
+			int range_start;
 
-		if (result->value < 0 || result->value > 103)
-			ERROR("invalid SGPR number (%d)", result->value);
+			token = strtok((char *) op_str+2, delimiter);
+			range_start = strtol((const char*) token, &end, 10);
 
-		result->op_code = SGPR_OP.op_code + result->value;
-		result->op_type = SGPR_OP;
+			if (*end)
+				ERROR("parsing operand (SGPR range start)");
 
+			// range_end is not used for now
+			// Multiplicity check is a bit confusing because it has to 
+			// be handled differently both for different type of instructions
+			// and different type of operands (in format SMRD)
+
+			// token = strtok(NULL, delimiter);
+			// range_end = strtol((const char*) token, &end, 10);
+
+			if (*end)
+				ERROR("parsing operand (SGPR range end)");
+
+			result->op_code = range_start;
+			result->op_type = SGPR_OP;
+		}
+		else
+		{
+			// Parse SGPR operand
+			result->value = strtol((const char*) op_str+1, &end, 10);
+
+			if (*end)
+				ERROR("parsing operand (SGPR value)");
+
+			if (result->value < 0 || result->value > 103)
+				ERROR("invalid SGPR number (%d)", result->value);
+
+			result->op_code = SGPR_OP.op_code + result->value;
+			result->op_type = SGPR_OP;
+		}
 		return result; 
 	}
 	else if (tolower(op_str[0]) == 't')
