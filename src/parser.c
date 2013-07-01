@@ -115,6 +115,8 @@ void parseFile(const char *input, const char *output)
 	}
 
 	fclose(out_file);
+
+	free(microcode);
 }
 
 /**
@@ -133,7 +135,7 @@ isa_op_code* parseLine(char *line)
 	int i, j;
 
 	// Allocate space for result op_code
-	result = malloc(sizeof(isa_op_code *));
+	result = (isa_op_code *) malloc(sizeof(isa_op_code *));
 
 	// Special case for commented lines
 	if (line[0] == comment_delimiter[0])
@@ -176,22 +178,22 @@ isa_op_code* parseLine(char *line)
 	switch (isa_instr_list[i].encoding)
 	{
 		case SOP2: 
-			*result = parseSOP2(isa_instr_list[i], args);
+			result = parseSOP2(isa_instr_list[i], args);
 			break;
 		case SOP1:
-			*result = parseSOP1(isa_instr_list[i], args);
+			result = parseSOP1(isa_instr_list[i], args);
 			break;
 		case SOPC:
-			*result = parseSOPC(isa_instr_list[i], args);
+			result = parseSOPC(isa_instr_list[i], args);
 			break;
 		case VOP2:
-			*result = parseVOP2(isa_instr_list[i], args);
+			result = parseVOP2(isa_instr_list[i], args);
 			break;
 		case VOP1:
-			*result = parseVOP1(isa_instr_list[i], args);
+			result = parseVOP1(isa_instr_list[i], args);
 			break;
 		case VOPC:
-			*result = parseVOPC(isa_instr_list[i], args);
+			result = parseVOPC(isa_instr_list[i], args);
 			break;
 		default:
 			WARNING("unsupported encoding type for instruction '%s'", 

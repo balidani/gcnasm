@@ -16,36 +16,41 @@
  * 
  * MAGIC (7) | OP (8) | VSRC1 (8) | SSRC0 (9) | [LITERAL (32)]
  */
-isa_op_code parseVOPC(isa_instr instr, char **args)
+isa_op_code* parseVOPC(isa_instr instr, char **args)
 {
-	char *src0_str, *vsrc1_str;
+	char *vsrc1_str, *src0_str;
 
-	isa_operand vsrc1_op, src0_op;	// ISA operand structs
-	isa_op_code op_code;			// Generated opcode struct
+	isa_operand *vsrc1_op, *src0_op;	// ISA operand structs
+	isa_op_code *op_code;				// Generated opcode struct
+
+	op_code = (isa_op_code *) malloc(sizeof(isa_op_code));
 
 	// Setup arguments
 	src0_str	= args[0];
 	vsrc1_str	= args[1];
 
 	// Parse operands
-	op_code.code = instr.op_code;
-	op_code.literal_set = 0;
+	op_code->code = instr.op_code;
+	op_code->literal_set = 0;
 
 	// SRC0
 	src0_op = parseOperand(src0_str, 9);
 
-	if (src0_op.op_type.type == LITERAL)
-		setLiteralOperand(&op_code, src0_op);
+	if (src0_op->op_type.type == LITERAL)
+		setLiteralOperand(op_code, src0_op);
 
-	op_code.code |= src0_op.op_code;	
+	op_code->code |= src0_op->op_code;	
 
 	// VSRC1
 	vsrc1_op = parseOperand(vsrc1_str, 8);
 
-	if (vsrc1_op.op_type.type != VGPR)
+	if (vsrc1_op->op_type.type != VGPR)
 		ERROR("VSRC1 must be of VGPR type");
 
-	op_code.code |= vsrc1_op.op_code << 9;
+	op_code->code |= vsrc1_op->op_code << 9;
+
+	free(vsrc1_op);
+	free(src0_op);
 
 	return op_code;
 }
