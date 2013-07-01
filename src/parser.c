@@ -91,9 +91,11 @@ void parseFile(const char *input, const char *output)
 		if (result->literal_set)
 		{
 			microcode[microcode_ptr++] = result->literal;
-
 			// printf("%08x\n", result->literal);
 		}
+	//	else
+	//		microcode[microcode_ptr++] = SOME_MAGIC_VALUE - it is better than random value
+		free(result);
 	}
 
 	fclose(in_file);
