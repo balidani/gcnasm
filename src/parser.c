@@ -95,6 +95,7 @@ void parseFile(const char *input, const char *output)
 		}
 	//	else
 	//		microcode[microcode_ptr++] = SOME_MAGIC_VALUE - it is better than random value
+
 		free(result);
 	}
 
@@ -134,8 +135,6 @@ isa_op_code* parseLine(char *line)
 	int op_count;
 	int i, j;
 
-	// Allocate space for result op_code
-	result = (isa_op_code *) malloc(sizeof(isa_op_code *));
 
 	// Special case for commented lines
 	if (line[0] == comment_delimiter[0])
@@ -150,7 +149,7 @@ isa_op_code* parseLine(char *line)
 	// Skip empty lines
 	if (token == NULL)
 		return NULL;
-	
+
 	for (i = 0; i < isa_instr_count; ++i)
 		if (strcmp(isa_instr_list[i].name, token) == 0)
 			break;
@@ -175,6 +174,8 @@ isa_op_code* parseLine(char *line)
 	for (j = 0; j < op_count; ++j)
 		parseToken(&line_strip, &(args[j]));
 
+	result = NULL;
+
 	switch (isa_instr_list[i].encoding)
 	{
 		case SOP2: 
@@ -198,9 +199,10 @@ isa_op_code* parseLine(char *line)
 		default:
 			WARNING("unsupported encoding type for instruction '%s'", 
 				isa_instr_list[i].name);
-			return NULL;
 			break;
 	}
+
+	free(args);
 
 	return result;
 }
