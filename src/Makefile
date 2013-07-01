@@ -7,7 +7,7 @@ CFILES = assembler.c error.c parser.c		\
 	sop2.c sop1.c sopc.c vop2.c vop1.c vopc.c 
 
 
-ASSEMBLER = ../run/assembler
+ASSEMBLER = ../run/gcnasm
 
 default:
 	$(CC) $(CFILES) $(CFLAGS) -o $(ASSEMBLER)
