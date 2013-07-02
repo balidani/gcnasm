@@ -50,7 +50,7 @@ isa_op_code* parseVOP1(isa_instr instr, char **args)
 	op_code->code |= src0_op->op_code;
 
 	free(vdst_op);
-	free(src0_str);
+	free(src0_op);
 
 	return op_code;
 }
