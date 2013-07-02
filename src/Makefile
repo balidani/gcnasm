@@ -4,8 +4,8 @@ RM = rm -f
 CFLAGS = -Wall -Waggregate-return
 CFILES = assembler.c error.c parser.c		\
 	isa_instr.c isa_operand.c isa_format.c	\
-	sop2.c sop1.c sopc.c smrd.c vop2.c		\
-	vop1.c vopc.c 
+	sop2.c sopk.c sop1.c sopc.c smrd.c 		\
+	vop2.c vop1.c vopc.c 
 
 
 ASSEMBLER = ../run/gcnasm

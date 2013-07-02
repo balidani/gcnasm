@@ -20,6 +20,7 @@
 #include "error.h"
 
 #include "sop2.h"
+#include "sopk.h"
 #include "sop1.h"
 #include "sopc.h"
 #include "smrd.h"

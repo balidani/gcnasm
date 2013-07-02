@@ -179,6 +179,9 @@ isa_op_code* parseLine(char *line)
 		case SOP2: 
 			result = parseSOP2(isa_instr_list[i], args);
 			break;
+		case SOPK: 
+			result = parseSOPK(isa_instr_list[i], args);
+			break;
 		case SOP1:
 			result = parseSOP1(isa_instr_list[i], args);
 			break;
