@@ -23,6 +23,7 @@
 #include "sopk.h"
 #include "sop1.h"
 #include "sopc.h"
+#include "sopp.h"
 #include "smrd.h"
 #include "vop2.h"
 #include "vop1.h"

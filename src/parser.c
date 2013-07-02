@@ -188,6 +188,9 @@ isa_op_code* parseLine(char *line)
 		case SOPC:
 			result = parseSOPC(isa_instr_list[i], args);
 			break;
+		case SOPP:
+			result = parseSOPP(isa_instr_list[i], args);
+			break;
 		case SMRD:
 			result = parseSMRD(isa_instr_list[i], args);
 			break;

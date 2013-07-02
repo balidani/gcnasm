@@ -181,18 +181,18 @@ isa_operand* parseOperand(char *op_str, int num_bits)
 		if (*end)
 			ERROR("parsing operand (literal value)");
 
-		if (result->value == 0)
+		if (num_bits != 16 && result->value == 0)
 		{
 
 			result->op_code = ZERO_OP.op_code;
 			result->op_type = ZERO_OP;
 		}
-		else if (result->value > 0 && result->value <= 64)
+		else if (num_bits != 16 && result->value > 0 && result->value <= 64)
 		{
 			result->op_code = INL_POS_OP.op_code + result->value - 1;
 			result->op_type = INL_POS_OP;
 		}
-		else if (result->value >= -16 && result->value <= -1)
+		else if (num_bits != 16 && result->value >= -16 && result->value <= -1)
 		{
 			result->op_code = INL_NEG_OP.op_code + (-result->value) - 1;
 			result->op_type = INL_NEG_OP;
