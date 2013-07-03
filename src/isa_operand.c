@@ -83,7 +83,7 @@ isa_operand* parseOperand(char *op_str, int num_bits)
 		return result;
 	}
 
-	if (tolower(op_str[0]) == 'v')
+	if (toupper(op_str[0]) == 'V')
 	{
 		// Parse VGPR operand
 		result->value = strtol((const char*) op_str+1, &end, 10);
@@ -103,7 +103,7 @@ isa_operand* parseOperand(char *op_str, int num_bits)
 		
 		return result; 
 	}
-	else if (tolower(op_str[0]) == 's')
+	else if (toupper(op_str[0]) == 'S')
 	{
 		if (op_str[1] == '[')
 		{
@@ -149,7 +149,7 @@ isa_operand* parseOperand(char *op_str, int num_bits)
 		}
 		return result; 
 	}
-	else if (tolower(op_str[0]) == 't')
+	else if (toupper(op_str[0]) == 'T')
 	{
 		// Parse TTMP operand
 		result->value = strtol((const char*) op_str+1, &end, 10);

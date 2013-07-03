@@ -148,6 +148,10 @@ isa_op_code* parseLine(char *line)
 	if (token == NULL)
 		return NULL;
 
+	// Convert token to uppercase
+	for (i = 0; token[i]; ++i)
+		token[i] = toupper(token[i]);
+
 	for (i = 0; i < isa_instr_count; ++i)
 		if (strcmp(isa_instr_list[i].name, token) == 0)
 			break;
