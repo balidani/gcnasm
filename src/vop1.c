@@ -16,7 +16,7 @@
  * 
  * MAGIC (7) | VDST (8) | OP (8) | SRC0 (9) | [LITERAL (32)]
  */
-isa_op_code* parseVOP1(isa_instr instr, char **args)
+isa_op_code* parseVOP1(isa_instr instr, int argc, char **args)
 {
 	char *vdst_str, *src0_str;
 
@@ -24,6 +24,9 @@ isa_op_code* parseVOP1(isa_instr instr, char **args)
 	isa_op_code *op_code;			// Generated opcode struct
 
 	op_code = (isa_op_code *) malloc(sizeof(isa_op_code));
+
+	if (argc < 2)
+		ERROR("number of passed operands is too low");
 
 	// Setup arguments
 	vdst_str	= args[0];

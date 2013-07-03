@@ -16,7 +16,7 @@
  * 
  * MAGIC (9) | OP (7) | SIMM (16)
  */
-isa_op_code* parseSOPP(isa_instr instr, char **args)
+isa_op_code* parseSOPP(isa_instr instr, int argc, char **args)
 {
 	char *simm_str;
 
@@ -25,6 +25,9 @@ isa_op_code* parseSOPP(isa_instr instr, char **args)
 
 	op_code = (isa_op_code *) malloc(sizeof(isa_op_code));
 	
+	if (argc < 1)
+		ERROR("number of passed operands is too low");
+
 	// Setup arguments
 	simm_str	= args[0];
 

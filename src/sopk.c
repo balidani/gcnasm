@@ -16,7 +16,7 @@
  * 
  * MAGIC (5) | OP (5) | SDST (7) | SIMM (16)
  */
-isa_op_code* parseSOPK(isa_instr instr, char **args)
+isa_op_code* parseSOPK(isa_instr instr, int argc, char **args)
 {
 	char *sdst_str, *simm_str;
 
@@ -25,6 +25,9 @@ isa_op_code* parseSOPK(isa_instr instr, char **args)
 
 	op_code = (isa_op_code *) malloc(sizeof(isa_op_code));
 	
+	if (argc < 2)
+		ERROR("number of passed operands is too low");
+
 	// Setup arguments
 	sdst_str	= args[0];
 	simm_str	= args[1];

@@ -16,7 +16,7 @@
  * 
  * MAGIC (9) | SDST (7) | OP (8) | SSRC0 (8) | [LITERAL (32)]
  */
-isa_op_code* parseSOP1(isa_instr instr, char **args)
+isa_op_code* parseSOP1(isa_instr instr, int argc, char **args)
 {
 	char *sdst_str, *ssrc0_str;
 
@@ -25,6 +25,9 @@ isa_op_code* parseSOP1(isa_instr instr, char **args)
 
 	op_code = (isa_op_code *) malloc(sizeof(isa_op_code));
 	
+	if (argc < 2)
+		ERROR("number of passed operands is too low");
+
 	// Setup arguments
 	sdst_str	= args[0];
 	ssrc0_str	= args[1];

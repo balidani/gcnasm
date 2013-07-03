@@ -33,6 +33,4 @@ void parseFile(const char *input, const char *output);
 
 isa_op_code* parseLine(char *line);
 
-void parseToken(char **line, char **res);
-
 #endif

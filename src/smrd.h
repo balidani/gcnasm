@@ -22,6 +22,6 @@ typedef enum {
 	OFFSET
 } smrd_operand;
 
-isa_op_code* parseSMRD(isa_instr instr, char **args);
+isa_op_code* parseSMRD(isa_instr instr, int argc, char **args);
 
 #endif

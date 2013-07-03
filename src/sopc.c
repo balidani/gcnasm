@@ -16,7 +16,7 @@
  * 
  * MAGIC (9) | OP (7) | SSRC1 (8) | SSRC0 (8) | [LITERAL (32)]
  */
-isa_op_code* parseSOPC(isa_instr instr, char **args)
+isa_op_code* parseSOPC(isa_instr instr, int argc, char **args)
 {
 	char *ssrc1_str, *ssrc0_str;
 
@@ -24,6 +24,9 @@ isa_op_code* parseSOPC(isa_instr instr, char **args)
 	isa_op_code *op_code;				// Generated opcode struct
 	
 	op_code = (isa_op_code *) malloc(sizeof(isa_op_code));
+
+	if (argc < 2)
+		ERROR("number of passed operands is too low");
 
 	// Setup arguments
 	ssrc0_str	= args[0];

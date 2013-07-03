@@ -23,13 +23,16 @@
  * MAGIC (5) | OP (5) | SDST (7) | SBASE (6) | IMM (1) | OFFSET (8) | 
  * [LITERAL (32)]
  */
-isa_op_code* parseSMRD(isa_instr instr, char **args)
+isa_op_code* parseSMRD(isa_instr instr, int argc, char **args)
 {
 	char *sdst_str, *sbase_str, *offset_str;
 
 	isa_operand *sdst_op, *sbase_op, *offset_op;	// ISA operand structs
 	isa_op_code *op_code;							// Generated opcode struct
 	
+	if (argc < 3)
+		ERROR("number of passed operands is too low");
+
 	// Setup arguments
 	sdst_str	= args[0];
 	sbase_str	= args[1];
