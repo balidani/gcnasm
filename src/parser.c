@@ -178,7 +178,7 @@ isa_op_code* parseLine(char *line)
 	if (j == isa_format_count)
 		ERROR("unrecognized format for the instruction '%s'", token);
 
-	max_op_count = isa_format_list[j].op_count;
+	max_op_count = isa_format_list[j].max_op_count;
 
 	// Allocate space for maximum number of operand pointers
 	args = (char **) calloc(max_op_count, sizeof(char *));
@@ -223,6 +223,9 @@ isa_op_code* parseLine(char *line)
 			break;
 		case VOPC:
 			result = parseVOPC(isa_instr_list[i], argc, args);
+			break;
+		case MUBUF:
+			result = parseMUBUF(isa_instr_list[i], argc, args);
 			break;
 		default:
 			WARNING("unsupported encoding type for instruction '%s'", 

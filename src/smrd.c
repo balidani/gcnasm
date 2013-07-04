@@ -45,7 +45,7 @@ isa_op_code* parseSMRD(isa_instr instr, int argc, char **args)
 	op_code->literal_set = 0;
 
 	// SDST
-	sdst_op = parseOperand(sdst_str, SDST);
+	sdst_op = parseOperand(sdst_str);
 
 	if (sdst_op->op_type.type != SGPR 
 			&& sdst_op->op_type.type != VCC_LO 
@@ -55,7 +55,7 @@ isa_op_code* parseSMRD(isa_instr instr, int argc, char **args)
 	op_code->code |= sdst_op->op_code << 15;
 
 	// SBASE
-	sbase_op = parseOperand(sbase_str, SBASE);
+	sbase_op = parseOperand(sbase_str);
 
 	if (sbase_op->op_type.type != SGPR)
 		ERROR("wrong type of operand for SBASE in the SMRD format");
@@ -67,7 +67,7 @@ isa_op_code* parseSMRD(isa_instr instr, int argc, char **args)
 	op_code->code |= sbase_op->op_code << 9;
 
 	// OFFSET
-	offset_op = parseOperand(offset_str, OFFSET);
+	offset_op = parseOperand(offset_str);
 
 	if (offset_op->op_type.type != SGPR)
 	{
@@ -91,8 +91,6 @@ isa_op_code* parseSMRD(isa_instr instr, int argc, char **args)
 	}
 
 	op_code->code |= offset_op->op_code;
-
-
 
 	free(sdst_op);
 	free(sbase_op);

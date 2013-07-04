@@ -38,7 +38,7 @@ isa_op_code* parseSOP2(isa_instr instr, int argc, char **args)
 	op_code->literal_set = 0;
 
 	// SDST
-	sdst_op = parseOperand(sdst_str, 7);
+	sdst_op = parseOperand(sdst_str);
 
 	if (sdst_op->op_type.type >= SDST_OPERAND_TRESHOLD)
 		ERROR("incorrect value for SDST operand");
@@ -46,7 +46,7 @@ isa_op_code* parseSOP2(isa_instr instr, int argc, char **args)
 	op_code->code |= sdst_op->op_code << 16;
 
 	// SSRC0 - First source operand
-	ssrc0_op = parseOperand(ssrc0_str, 8);
+	ssrc0_op = parseOperand(ssrc0_str);
 
 	if (ssrc0_op->op_type.type == VGPR)
 		ERROR("incorrect value for SSRC0 operand");
@@ -57,7 +57,7 @@ isa_op_code* parseSOP2(isa_instr instr, int argc, char **args)
 	op_code->code |= ssrc0_op->op_code;	
 
 	// SSRC1 - Second source operand
-	ssrc1_op = parseOperand(ssrc1_str, 8);
+	ssrc1_op = parseOperand(ssrc1_str);
 
 	if (ssrc1_op->op_type.type == VGPR)
 		ERROR("incorrect value for SSRC1 operand");

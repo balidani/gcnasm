@@ -37,7 +37,7 @@ isa_op_code* parseSOPC(isa_instr instr, int argc, char **args)
 	op_code->literal_set = 0;
 
 	// SSRC0 - First source operand
-	ssrc0_op = parseOperand(ssrc0_str, 8);
+	ssrc0_op = parseOperand(ssrc0_str);
 
 	if (ssrc0_op->op_type.type == VGPR)
 		ERROR("incorrect value for SSRC0 operand");
@@ -48,7 +48,7 @@ isa_op_code* parseSOPC(isa_instr instr, int argc, char **args)
 	op_code->code |= ssrc0_op->op_code;	
 
 	// SSRC1 - Second source operand
-	ssrc1_op = parseOperand(ssrc1_str, 8);
+	ssrc1_op = parseOperand(ssrc1_str);
 
 	if (ssrc1_op->op_type.type == VGPR)
 		ERROR("incorrect value for SSRC1 operand");

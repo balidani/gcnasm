@@ -16,12 +16,6 @@
 #include "isa_operand.h"
 #include "error.h"
 
-typedef enum {
-	SDST,
-	SBASE,
-	OFFSET
-} smrd_operand;
-
 isa_op_code* parseSMRD(isa_instr instr, int argc, char **args);
 
 #endif

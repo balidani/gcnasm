@@ -28,6 +28,7 @@
 #include "vop2.h"
 #include "vop1.h"
 #include "vopc.h"
+#include "mubuf.h"
 
 void parseFile(const char *input, const char *output);
 

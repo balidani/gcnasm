@@ -39,7 +39,7 @@ isa_op_code* parseVOP2(isa_instr instr, int argc, char **args)
 	op_code->literal_set = 0;
 
 	// VDST
-	vdst_op = parseOperand(vdst_str, 8);
+	vdst_op = parseOperand(vdst_str);
 
 	if (vdst_op->op_type.type != VGPR)
 		ERROR("VDST must be of VGPR type");
@@ -47,15 +47,17 @@ isa_op_code* parseVOP2(isa_instr instr, int argc, char **args)
 	op_code->code |= vdst_op->op_code << 17;
 
 	// SRC0
-	src0_op = parseOperand(src0_str, 9);
+	src0_op = parseOperand(src0_str);
 
 	if (src0_op->op_type.type == LITERAL)
 		setLiteralOperand(op_code, src0_op);
+	else if (src0_op->op_type.type == VGPR)
+			src0_op->op_code += 256;
 
 	op_code->code |= src0_op->op_code;	
 
 	// VSRC1
-	vsrc1_op = parseOperand(vsrc1_str, 8);
+	vsrc1_op = parseOperand(vsrc1_str);
 
 	if (vsrc1_op->op_type.type != VGPR)
 		ERROR("VSRC1 must be of VGPR type");

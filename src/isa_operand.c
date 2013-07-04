@@ -62,13 +62,20 @@ const isa_operand_type isa_mapped_operand_list[] =
 const int isa_mapped_operand_count = sizeof(isa_mapped_operand_list) 
 	/ sizeof(isa_operand_type);
 
-isa_operand* parseOperand(char *op_str, int num_bits)
+/**
+ * Parse a single operand and set the corresponding opcode
+ */
+isa_operand* parseOperand(char *op_str)
 {
 	isa_operand* result;
 	char *end;
 	int i;
 
 	result = (isa_operand *) malloc(sizeof(isa_operand));
+
+	// Convert operand to upper-case
+	for (i = 0; op_str[i]; ++i)
+		op_str[i] = toupper(op_str[i]);
 
 	// Look up simple (built-in) operand types
 	for (i = 0; i < isa_simple_operand_count; ++i)
@@ -83,7 +90,7 @@ isa_operand* parseOperand(char *op_str, int num_bits)
 		return result;
 	}
 
-	if (toupper(op_str[0]) == 'V')
+	if (op_str[0] == 'V')
 	{
 		// Parse VGPR operand
 		result->value = strtol((const char*) op_str+1, &end, 10);
@@ -96,14 +103,10 @@ isa_operand* parseOperand(char *op_str, int num_bits)
 
 		result->op_code = VGPR_OP.op_code + result->value;
 		result->op_type = VGPR_OP;
-
-		// The 9-bit SRC0 operand can represent both SGPRs and VGPRs
-		if (num_bits == 9)
-			result->op_code += 256;
 		
 		return result; 
 	}
-	else if (toupper(op_str[0]) == 'S')
+	else if (op_str[0] == 'S')
 	{
 		if (op_str[1] == '[')
 		{
@@ -149,7 +152,7 @@ isa_operand* parseOperand(char *op_str, int num_bits)
 		}
 		return result; 
 	}
-	else if (toupper(op_str[0]) == 'T')
+	else if (op_str[0] == 'T')
 	{
 		// Parse TTMP operand
 		result->value = strtol((const char*) op_str+1, &end, 10);
@@ -169,7 +172,7 @@ isa_operand* parseOperand(char *op_str, int num_bits)
 	{
 		// Parse literal constant
 
-		if (strncmp(op_str, "0x", 2) == 0)
+		if (strncmp(op_str, "0X", 2) == 0)
 		{
 			result->value = strtol((const char*) op_str+2, &end, 16);
 		}
@@ -181,18 +184,18 @@ isa_operand* parseOperand(char *op_str, int num_bits)
 		if (*end)
 			ERROR("parsing operand (literal value)");
 
-		if (num_bits != 16 && result->value == 0)
+		if (result->value == 0)
 		{
 
 			result->op_code = ZERO_OP.op_code;
 			result->op_type = ZERO_OP;
 		}
-		else if (num_bits != 16 && result->value > 0 && result->value <= 64)
+		else if (result->value > 0 && result->value <= 64)
 		{
 			result->op_code = INL_POS_OP.op_code + result->value - 1;
 			result->op_type = INL_POS_OP;
 		}
-		else if (num_bits != 16 && result->value >= -16 && result->value <= -1)
+		else if (result->value >= -16 && result->value <= -1)
 		{
 			result->op_code = INL_NEG_OP.op_code + (-result->value) - 1;
 			result->op_type = INL_NEG_OP;

@@ -37,7 +37,7 @@ isa_op_code* parseSOPK(isa_instr instr, int argc, char **args)
 	op_code->literal_set = 0;
 
 	// SDST
-	sdst_op = parseOperand(sdst_str, 7);
+	sdst_op = parseOperand(sdst_str);
 
 	if (sdst_op->op_type.type >= SDST_OPERAND_TRESHOLD)
 		ERROR("incorrect value for SDST operand");
@@ -45,9 +45,12 @@ isa_op_code* parseSOPK(isa_instr instr, int argc, char **args)
 	op_code->code |= sdst_op->op_code << 16;
 
 	// SIMM
-	simm_op = parseOperand(simm_str, 16);
+	simm_op = parseOperand(simm_str);
 
-	if (simm_op->op_type.type != LITERAL)
+	if (simm_op->op_type.type != LITERAL
+			&& simm_op->op_type.type != ZERO
+			&& simm_op->op_type.type != INL_POS
+			&& simm_op->op_type.type != INL_NEG)
 		ERROR("non-literal value supplied for SIMM operand");
 
 	// We use a 16 bit inline literal here
