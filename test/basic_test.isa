@@ -18,10 +18,7 @@ S_ADD_I32	S3, S4, 12				; Small literal test
 S_ADD_I32	S3, S4, -255			; Large neg. literal test
 S_ADD_I32	S3, S4, -12				; Small neg. literal test
 S_MIN_U32	S5, S6, 0xABCD			;							
-S_MIN_U32	s7, 0xfedc, s8			; Lower-case test
-
-; Whoops, this isn't supported yet
-;s_lshl_b32	S9, 0xCCCC, S10 		; Lower-case instruction test
+s_min_u32	s7, 0xfedc, s8			; Lower-case test
 
 ; Special operand type tests
 S_NOR_B64	S11, S12, VCC_LO		; VCC_LO operand test
@@ -44,6 +41,7 @@ S_SUBB_U32	S18, S19, t11			; TTMP11 test
 
 ; VOP2 tests
 ; <OP> <VDST> [<VCC>] <SRC0> <VSRC1>
+
 V_ADD_I32	v0, v0, v1				; 4A000300
 V_ADD_I32	v0, s1, v0				; 4A000001
 V_ADD_I32	v0, s0, v0				; 4A000000
@@ -59,3 +57,18 @@ V_LSHLREV_B32	v0, 2, v0			; 34000082
 V_MUL_I32_I24	v1, s12, v1			; 1202020C
 V_LSHLREV_B32	v2, 2, v4			; 34040882
 V_OR_B32		v4, 64, v1			; 380802C0 
+
+; SMRD test
+
+S_LOAD_DWORDX4			S[16:19], S[2:3], 0x00 ; C0880300
+S_LOAD_DWORDX4			S[20:23], S[2:3], 0x04 ; C08A0304
+S_LOAD_DWORDX4			S[0:3], S[2:3], 0x08   ; C0800308
+S_BUFFER_LOAD_DWORD		S13, S[16:19], 0x04	   ; C2069104
+S_BUFFER_LOAD_DWORD		S14, S[16:19], 0x18	   ; C2071118
+S_BUFFER_LOAD_DWORD		S15, S[20:23], 0x00	   ; C2079500
+S_BUFFER_LOAD_DWORD		S16, S[20:23], 0x08	   ; C2081508
+S_NOP					0
+
+; MUBUF test
+
+BUFFER_STORE_FORMAT_XYZW	v1, v0, s[4:7], 0, offen, 0x4
