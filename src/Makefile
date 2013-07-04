@@ -19,6 +19,7 @@ default:
 clean:
 	$(RM) $(GCNASM)
 
-check-leak:
-	$(VAL) --tool=memcheck --leak-check=full $(GCNASM) $(TEST)/basic_test.isa output.bin
+memtest:
+	$(VAL) --tool=memcheck --leak-check=full $(GCNASM) 				\
+		$(TEST)/basic_test.isa output.bin
 	$(RM) output.bin
