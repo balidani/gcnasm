@@ -1,5 +1,6 @@
 CC = gcc
 RM = rm -f
+VAL = valgrind
 
 CFLAGS = -Wall -Wextra -Wconversion -Wundef -Wshadow 				\
 	-Waggregate-return -Wunreachable-code
@@ -9,10 +10,15 @@ CFILES = assembler.c error.c parser.c isa_instr.c isa_operand.c 	\
 	vop1.c vopc.c mubuf.c
 
 
-ASSEMBLER = ../run/gcnasm
+GCNASM = ../run/gcnasm
+TEST = ../test
 
 default:
-	$(CC) $(CFILES) $(CFLAGS) -o $(ASSEMBLER)
+	$(CC) $(CFILES) $(CFLAGS) -o $(GCNASM)
 
 clean:
-	$(RM) $(ASSEMBLER)
+	$(RM) $(GCNASM)
+
+check-leak:
+	$(VAL) --tool=memcheck --leak-check=full $(GCNASM) $(TEST)/basic_test.isa output.bin
+	$(RM) output.bin
