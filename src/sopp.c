@@ -38,10 +38,7 @@ isa_op_code* parseSOPP(isa_instr instr, int argc, char **args)
 	// SIMM
 	simm_op = parseOperand(simm_str);
 
-	if (simm_op->op_type.type != LITERAL
-			&& simm_op->op_type.type != ZERO
-			&& simm_op->op_type.type != INL_POS
-			&& simm_op->op_type.type != INL_NEG)
+	if (!isConstantOperand(simm_op))
 		ERROR("non-literal value supplied for SIMM operand");
 
 	// We use a 16 bit inline literal here

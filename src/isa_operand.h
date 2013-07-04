@@ -67,7 +67,7 @@ typedef enum
 	LITERAL,
 	ERROR,
 	// Vector general-purpose registers
-	VGPR,
+	VGPR
 } isa_operand_type_enum;
 
 typedef struct
@@ -97,6 +97,6 @@ extern const int isa_mapped_operand_count;
 
 isa_operand* parseOperand(char *op_str);
 void setLiteralOperand(isa_op_code *op_code, isa_operand *operand);
-int isLiteralOperand(isa_operand *operand);
+int isConstantOperand(isa_operand *operand);
 
 #endif

@@ -79,11 +79,13 @@ isa_op_code* parseSMRD(isa_instr instr, int argc, char **args)
 
 		if (strncmp(offset_str, "0x", 2) == 0)
 		{
-			offset_op->op_code = strtol((const char*) offset_str+2, &end, 16);
+			offset_op->op_code = (uint32_t) strtoll((const char*) 
+				offset_str+2, &end, 16);
 		}
 		else
 		{
-			offset_op->op_code = strtol((const char*) offset_str, &end, 10);
+			offset_op->op_code = (uint32_t) strtoll((const char*) 
+				offset_str, &end, 10);
 		}
 
 		// Also set the IMM bit

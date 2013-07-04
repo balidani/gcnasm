@@ -75,7 +75,7 @@ isa_operand* parseOperand(char *op_str)
 
 	// Convert operand to upper-case
 	for (i = 0; op_str[i]; ++i)
-		op_str[i] = toupper(op_str[i]);
+		op_str[i] = (char) toupper(op_str[i]);
 
 	// Look up simple (built-in) operand types
 	for (i = 0; i < isa_simple_operand_count; ++i)
@@ -93,12 +93,12 @@ isa_operand* parseOperand(char *op_str)
 	if (op_str[0] == 'V')
 	{
 		// Parse VGPR operand
-		result->value = strtol((const char*) op_str+1, &end, 10);
+		result->value = (uint32_t) strtol((const char*) op_str+1, &end, 10);
 
 		if (*end)
 			ERROR("parsing operand (VGPR value)");
 
-		if (result->value < 0 || result->value > 255)
+		if (result->value > 255)
 			ERROR("invalid VGPR number (%d)", result->value);
 
 		result->op_code = VGPR_OP.op_code + result->value;
@@ -114,10 +114,10 @@ isa_operand* parseOperand(char *op_str)
 			const char *delimiter = ":]";
 			char *token;
 
-			int range_start;
+			uint32_t range_start;
 
 			token = strtok((char *) op_str+2, delimiter);
-			range_start = strtol((const char*) token, &end, 10);
+			range_start = (uint32_t) strtol((const char*) token, &end, 10);
 
 			if (*end)
 				ERROR("parsing operand (SGPR range start)");
@@ -139,12 +139,13 @@ isa_operand* parseOperand(char *op_str)
 		else
 		{
 			// Parse SGPR operand
-			result->value = strtol((const char*) op_str+1, &end, 10);
+			result->value = (uint32_t) strtol((const char*) op_str+1, 
+				&end, 10);
 
 			if (*end)
 				ERROR("parsing operand (SGPR value)");
 
-			if (result->value < 0 || result->value > 103)
+			if (result->value > 103)
 				ERROR("invalid SGPR number (%d)", result->value);
 
 			result->op_code = SGPR_OP.op_code + result->value;
@@ -155,12 +156,12 @@ isa_operand* parseOperand(char *op_str)
 	else if (op_str[0] == 'T')
 	{
 		// Parse TTMP operand
-		result->value = strtol((const char*) op_str+1, &end, 10);
+		result->value = (uint32_t) strtol((const char*) op_str+1, &end, 10);
 
 		if (*end)
 			ERROR("parsing operand (TTMP value)");
 
-		if (result->value < 0 || result->value > 11)
+		if (result->value > 11)
 			ERROR("invalid TTMP number (%d)", result->value);
 
 		result->op_code = TTMP_OP.op_code + result->value;
@@ -171,32 +172,40 @@ isa_operand* parseOperand(char *op_str)
 	else
 	{
 		// Parse literal constant
+		
+		// 64-bit "real" value (so the last bit of the uint32_t 
+		// is not lost on the sign in case it's needed)
+		int64_t real_value;
 
 		if (strncmp(op_str, "0X", 2) == 0)
 		{
-			result->value = strtol((const char*) op_str+2, &end, 16);
+			real_value = strtoll((const char*) op_str+2, &end, 16);
+			result->value = (uint32_t) real_value;
 		}
 		else
 		{
-			result->value = strtol((const char*) op_str, &end, 10);
+			real_value = strtoll((const char*) op_str, &end, 10);
+			result->value = (uint32_t) real_value;
 		}
 
 		if (*end)
 			ERROR("parsing operand (literal value)");
 
-		if (result->value == 0)
+		if (real_value == 0)
 		{
 
 			result->op_code = ZERO_OP.op_code;
 			result->op_type = ZERO_OP;
 		}
-		else if (result->value > 0 && result->value <= 64)
+		else if (real_value > 0 && real_value <= 64)
 		{
 			result->op_code = INL_POS_OP.op_code + result->value - 1;
 			result->op_type = INL_POS_OP;
 		}
-		else if (result->value >= -16 && result->value <= -1)
+		else if (real_value >= -16 && real_value <= -1)
 		{
+			// TODO: this WILL treat large positive values as 
+			// inline negative constants, this should be fixed soon
 			result->op_code = INL_NEG_OP.op_code + (-result->value) - 1;
 			result->op_type = INL_NEG_OP;
 		}
@@ -222,4 +231,20 @@ void setLiteralOperand(isa_op_code *op_code, isa_operand *operand)
 	
 	op_code->literal_set = 1;
 	op_code->literal = operand->value;
+}
+
+int isConstantOperand(isa_operand *operand)
+{
+	if (0)
+	{
+		printf("Unreachable!");
+	}
+
+	if (operand->op_type.type == LITERAL
+			|| operand->op_type.type == ZERO
+			|| operand->op_type.type == INL_POS
+			|| operand->op_type.type == INL_NEG)
+		return 1;
+
+	return 0;
 }

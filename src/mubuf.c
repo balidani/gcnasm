@@ -93,7 +93,7 @@ isa_op_code* parseMUBUF(isa_instr instr, int argc, char **args)
 	{
 		// Convert to upper case
 		for (j = 0; args[i][j]; ++j)
-			args[i][j] = toupper(args[i][j]);
+			args[i][j] = (char) toupper(args[i][j]);
 
 		if (strcmp(args[i], "OFFEN") == 0)
 			op_code->code |= (1 << 12);
@@ -113,10 +113,7 @@ isa_op_code* parseMUBUF(isa_instr instr, int argc, char **args)
 		{
 			isa_operand *offset_op = parseOperand(args[i]);
 
-			if (offset_op->op_type.type != LITERAL
-					&& offset_op->op_type.type != ZERO
-					&& offset_op->op_type.type != INL_POS
-					&& offset_op->op_type.type != INL_NEG)
+			if (!isConstantOperand(offset_op))
 				ERROR("non-literal value supplied for OFFSET operand");
 
 			op_code->code |= offset_op->value;

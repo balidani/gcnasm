@@ -26,7 +26,7 @@ static const char comment_delimiter[] = ";\n";
  *
  * Removes any trailing new-line
  */
-static char* getField(char **line, const char delimiter[])
+char* parseField(char **line, const char delimiter[])
 {
 	char *field;
 
@@ -76,7 +76,8 @@ void parseFile(const char *input, const char *output)
 	fclose(in_file);
 
 	// Allocate space for microcode
-	microcode = (uint32_t *) calloc(line_count * 2, sizeof (uint32_t));
+	microcode = (uint32_t *) calloc((size_t) line_count * 2, 
+		sizeof (uint32_t));
 	microcode_ptr = 0;
 
 	// Parse each line
@@ -150,10 +151,10 @@ isa_op_code* parseLine(char *line)
 		return NULL;
 
 	// Strip comments
-	line_strip = getField(&line, comment_delimiter);
+	line_strip = parseField(&line, comment_delimiter);
 
 	// Get instruction token
-	token = getField(&line_strip, field_delimiter);
+	token = parseField(&line_strip, field_delimiter);
 
 	// Skip empty lines
 	if (token == NULL)
@@ -161,7 +162,7 @@ isa_op_code* parseLine(char *line)
 
 	// Convert token to uppercase
 	for (i = 0; token[i]; ++i)
-		token[i] = toupper(token[i]);
+		token[i] = (char) toupper(token[i]);
 
 	for (i = 0; i < isa_instr_count; ++i)
 		if (strcmp(isa_instr_list[i].name, token) == 0)
@@ -181,13 +182,13 @@ isa_op_code* parseLine(char *line)
 	max_op_count = isa_format_list[j].max_op_count;
 
 	// Allocate space for maximum number of operand pointers
-	args = (char **) calloc(max_op_count, sizeof(char *));
+	args = (char **) calloc((size_t) max_op_count, sizeof(char *));
 	
 	// Parse operand tokens
 	argc = 0;
 	while (line_strip != NULL)
 	{
-		char *res = getField(&line_strip, field_delimiter);
+		char *res = parseField(&line_strip, field_delimiter);
 		
 		if (res != NULL)
 			args[argc++] = res;
