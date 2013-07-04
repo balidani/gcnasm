@@ -72,3 +72,7 @@ S_NOP					0
 ; MUBUF test
 
 BUFFER_STORE_FORMAT_XYZW	v1, v0, s[4:7], 0, offen, 0x4
+
+; MTBUF test
+
+tbuffer_load_format_x  v1, v1, s[4:7], 0 offen format:[BUF_DATA_FORMAT_32,BUF_NUM_FORMAT_FLOAT]
