@@ -231,6 +231,9 @@ isa_op_code* parseLine(char *line)
 		case MTBUF:
 			result = parseMTBUF(isa_instr_list[i], argc, args);
 			break;
+		case MIMG:
+			result = parseMIMG(isa_instr_list[i], argc, args);
+			break;
 		default:
 			WARNING("unsupported encoding type for instruction '%s'", 
 				isa_instr_list[i].name);

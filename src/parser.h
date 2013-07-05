@@ -30,6 +30,7 @@
 #include "vopc.h"
 #include "mubuf.h"
 #include "mtbuf.h"
+#include "mimg.h"
 
 void parseFile(const char *input, const char *output);
 isa_op_code* parseLine(char *line);
