@@ -13,18 +13,25 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "alias.h"
 #include "parser.h"
 
 int main(int argc, char **argv) 
 {
-
 	if (argc != 3) 
 	{
 		printf("Usage: %s <input> <output>\n", argv[0]);
 		exit(EXIT_FAILURE);
 	}
 
+	// Initialize alias list
+	initAlias();
+
+	// Parse the input ISA file and write to output
 	parseFile(argv[1], argv[2]);
+
+	// Free alias list
+	clearAlias();
 
 	exit(EXIT_SUCCESS);
 }

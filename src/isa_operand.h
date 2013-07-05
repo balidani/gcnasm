@@ -14,6 +14,7 @@
 
 #include <stdint.h>
 
+#include "alias.h"
 #include "error.h"
 
 // These are still SOP2 dependent,

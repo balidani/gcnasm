@@ -71,15 +71,37 @@ isa_operand* parseOperand(char *op_str)
 	char *end;
 	int i;
 
+	char **op_alias, *alias_copy;
+
 	result = (isa_operand *) malloc(sizeof(isa_operand));
 
 	// Convert operand to upper-case
 	for (i = 0; op_str[i]; ++i)
 		op_str[i] = (char) toupper(op_str[i]);
 
+	// Look up possible aliases
+	op_alias = &op_str;
+	alias_copy = NULL;
+
+	for (i = 0; i < alias_count; ++i)
+		if (strcmp(op_str, alias_list[i].tag) == 0)
+			break;
+
+	if (i < alias_count)
+	{
+		// Copy the operand part of the alias and point to it
+		alias_copy = (char *) calloc(strlen(alias_list[i].operand), 
+			sizeof(char));
+
+		strncpy(alias_copy, alias_list[i].operand, 
+			strlen(alias_list[i].operand));
+
+		op_alias = &alias_copy;
+	}
+
 	// Look up simple (built-in) operand types
 	for (i = 0; i < isa_simple_operand_count; ++i)
-		if (strncmp(op_str, isa_simple_operand_list[i].name, 
+		if (strncmp(*op_alias, isa_simple_operand_list[i].name, 
 				strlen(isa_simple_operand_list[i].name)) == 0)
 			break;
 
@@ -87,13 +109,11 @@ isa_operand* parseOperand(char *op_str)
 	{
 		result->op_code = isa_simple_operand_list[i].op_code;
 		result->op_type = isa_simple_operand_list[i];
-		return result;
 	}
-
-	if (op_str[0] == 'V')
+	else if ((*op_alias)[0] == 'V')
 	{
 		// Parse VGPR operand
-		result->value = (uint32_t) strtol((const char*) op_str+1, &end, 10);
+		result->value = (uint32_t) strtol((const char*) (*op_alias)+1, &end, 10);
 
 		if (*end)
 			ERROR("parsing operand (VGPR value)");
@@ -103,12 +123,10 @@ isa_operand* parseOperand(char *op_str)
 
 		result->op_code = VGPR_OP.op_code + result->value;
 		result->op_type = VGPR_OP;
-		
-		return result; 
 	}
-	else if (op_str[0] == 'S')
+	else if ((*op_alias)[0] == 'S')
 	{
-		if (op_str[1] == '[')
+		if ((*op_alias)[1] == '[')
 		{
 			// Parse SGPR range
 			const char *delimiter = ":]";
@@ -116,7 +134,7 @@ isa_operand* parseOperand(char *op_str)
 
 			uint32_t range_start;
 
-			token = strtok((char *) op_str+2, delimiter);
+			token = strtok((char *) (*op_alias)+2, delimiter);
 			range_start = (uint32_t) strtol((const char*) token, &end, 10);
 
 			if (*end)
@@ -139,7 +157,7 @@ isa_operand* parseOperand(char *op_str)
 		else
 		{
 			// Parse SGPR operand
-			result->value = (uint32_t) strtol((const char*) op_str+1, 
+			result->value = (uint32_t) strtol((const char*) (*op_alias)+1, 
 				&end, 10);
 
 			if (*end)
@@ -151,12 +169,11 @@ isa_operand* parseOperand(char *op_str)
 			result->op_code = SGPR_OP.op_code + result->value;
 			result->op_type = SGPR_OP;
 		}
-		return result; 
 	}
-	else if (op_str[0] == 'T')
+	else if ((*op_alias)[0] == 'T')
 	{
 		// Parse TTMP operand
-		result->value = (uint32_t) strtol((const char*) op_str+1, &end, 10);
+		result->value = (uint32_t) strtol((const char*) (*op_alias)+1, &end, 10);
 
 		if (*end)
 			ERROR("parsing operand (TTMP value)");
@@ -166,8 +183,6 @@ isa_operand* parseOperand(char *op_str)
 
 		result->op_code = TTMP_OP.op_code + result->value;
 		result->op_type = TTMP_OP;
-
-		return result; 
 	}
 	else
 	{
@@ -177,14 +192,14 @@ isa_operand* parseOperand(char *op_str)
 		// is not lost on the sign in case it's needed)
 		int64_t real_value;
 
-		if (strncmp(op_str, "0X", 2) == 0)
+		if (strncmp((*op_alias), "0X", 2) == 0)
 		{
-			real_value = strtoll((const char*) op_str+2, &end, 16);
+			real_value = strtoll((const char*) (*op_alias)+2, &end, 16);
 			result->value = (uint32_t) real_value;
 		}
 		else
 		{
-			real_value = strtoll((const char*) op_str, &end, 10);
+			real_value = strtoll((const char*) (*op_alias), &end, 10);
 			result->value = (uint32_t) real_value;
 		}
 
@@ -215,12 +230,11 @@ isa_operand* parseOperand(char *op_str)
 			result->op_type = LITERAL_OP;
 		}
 
-		return result;
 	}
 
-	// At this stage this is unreachable code
-
-	ERROR("unsupported operand type (%s", op_str);
+	if (alias_copy != NULL)
+		free(alias_copy);
+	
 	return result;
 }
 

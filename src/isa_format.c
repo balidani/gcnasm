@@ -24,7 +24,7 @@ const isa_format isa_format_list[] =
 	{VOPC,	2},
 	{MUBUF, 12},
 	{MTBUF, 13},
-	{MIMG, 12}
+	{MIMG,  12}
 };
 
 const int isa_format_count = sizeof(isa_format_list) / sizeof(isa_format);
