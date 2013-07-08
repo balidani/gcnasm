@@ -14,12 +14,12 @@
 #include "alias.h"
 
 alias *alias_list;
-int alias_count;
+unsigned int alias_count;
 
 // A reasonal upper limit for aliases
 // TODO: in later versions an unlimited number 
 // of aliases should be supported
-static int max_alias = 256;
+static const unsigned int max_alias = 256;
 
 /**
  * Alias list initialization
@@ -27,6 +27,8 @@ static int max_alias = 256;
 void initAlias()
 {
 	alias_list = (alias *) calloc((size_t) max_alias, sizeof(alias));
+	if(!alias_list)
+		ERROR("cannot allocate memory for alias_list");
 	alias_count = 0;
 
 	// Initial aliases are added here
