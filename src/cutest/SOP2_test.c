@@ -1,3 +1,9 @@
+/*
+ * This software is Copyright 2013, Lukas Odzioba <ukasz at openwall.com>,
+ * and it is hereby released to the general public under the following terms:
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted.
+ */
 #include <assert.h>
 #include <setjmp.h>
 #include <stdlib.h>
