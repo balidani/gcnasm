@@ -24,6 +24,6 @@ void clearAlias();
 void addAlias(const char *tag, const char *operand);
 
 extern alias *alias_list;
-extern int alias_count;
+extern unsigned int alias_count;
 
 #endif

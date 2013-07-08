@@ -92,9 +92,9 @@ typedef struct {
 } isa_op_code;
 
 extern const isa_operand_type isa_simple_operand_list[];
-extern const int isa_simple_operand_count;
+extern const unsigned int isa_simple_operand_count;
 extern const isa_operand_type isa_mapped_operand_list[];
-extern const int isa_mapped_operand_count;
+extern const unsigned int isa_mapped_operand_count;
 
 isa_operand* parseOperand(char *op_str);
 void setLiteralOperand(isa_op_code *op_code, isa_operand *operand);

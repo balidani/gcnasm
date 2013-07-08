@@ -34,6 +34,7 @@ isa_op_code* parseVOPC(isa_instr instr, int argc, char **args)
 
 	// Parse operands
 	op_code->code = instr.op_code;
+	op_code->literal = 0;
 	op_code->literal_set = 0;
 
 	// SRC0

@@ -45,7 +45,7 @@ const isa_operand_type isa_simple_operand_list[] =
 	{"SCC",			0xFD, SCC			}
 };
 
-const int isa_simple_operand_count = sizeof(isa_simple_operand_list) 
+const unsigned int isa_simple_operand_count = sizeof(isa_simple_operand_list)
 	/ sizeof(isa_operand_type);
 
 const isa_operand_type isa_mapped_operand_list[] = 
@@ -59,7 +59,7 @@ const isa_operand_type isa_mapped_operand_list[] =
 	{"LITERAL",		0xFF, LITERAL		}
 };
 
-const int isa_mapped_operand_count = sizeof(isa_mapped_operand_list) 
+const unsigned int isa_mapped_operand_count = sizeof(isa_mapped_operand_list)
 	/ sizeof(isa_operand_type);
 
 /**
@@ -69,7 +69,7 @@ isa_operand* parseOperand(char *op_str)
 {
 	isa_operand* result;
 	char *end;
-	int i;
+	unsigned int i;
 
 	char **op_alias, *alias_copy;
 
