@@ -21,14 +21,21 @@ endif
 
 # gcc options
 CFLAGS = -Wall -I'$(OCLROOT)/include'
-LDFLAGS = -L'$(OCLROOT)/lib/x86' -lOpenCL
 CFILES = binary_gen.c
         
 # Executable path
 BINARY_GEN = ../../run/binary_gen
 
 default:
-	$(CC) $(CFILES) $(CFLAGS) $(LDFLAGS) -o $(BINARY_GEN) 
+	@echo "To build, type:"
+	@echo "x86-64	Linux, 64bit"
+	@echo "x86	Linux, 32bit"
+
+x86-64:
+	$(CC) $(CFILES) $(CFLAGS) -L'$(OCLROOT)/lib/x86_64' -lOpenCL -o $(BINARY_GEN)
+
+x86:
+	$(CC) $(CFILES) $(CFLAGS) -L'$(OCLROOT)/lib/x86' -lOpenCL -o $(BINARY_GEN)	
 
 clean:
 	$(RM) $(BINARY_GEN)
