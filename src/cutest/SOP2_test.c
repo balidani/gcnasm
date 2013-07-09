@@ -13,8 +13,10 @@
 #include "CuTest.h"
 #include "../isa_operand.h"
 #include "../parser.h"
+#include "../alias.h"
+
 /*-------------------------------------------------------------------------*
- * VOP2 Test
+ * SOP2 Test
  *-------------------------------------------------------------------------*/
 
 
@@ -34,12 +36,16 @@ int assert_isa_op_code_equal(CuTest* tc, isa_op_code *result, isa_op_code *expec
 	return ret;
 }
 
-#define TEST_isa_op_code(line,code,literal,literal_set)\
-	{char sline[]=line;\
-	isa_op_code expected={code,literal,literal_set};\
-	isa_op_code *ret=parseLine(sline);\
-	CuAssertTrue(tc,assert_isa_op_code_equal(tc,ret,&expected));\
-	free(ret);}
+#define TEST_isa_op_code(line, code, literal, literal_set)			\
+{																	\
+	char sline[] = line;											\
+	initAlias();													\
+	isa_op_code expected = {code, literal, literal_set};			\
+	isa_op_code *ret = parseLine(sline);							\
+	CuAssertTrue(tc, assert_isa_op_code_equal(tc, ret, &expected));	\
+	free(ret);														\
+	clearAlias();													\
+}
 	
 
 void S_MIN_U32_test(CuTest* tc)
@@ -70,26 +76,24 @@ void S_LSHL_B32_test(CuTest* tc)
 void S_ANDN2_B64_test(CuTest* tc)
 {
 	TEST_isa_op_code("s_andn2_b64   s[28:29], s[28:29], s[30:31]",0x8A9C1E1C,0x00000000,0);
-//	uncomment if aliases are supported
-//	TEST_isa_op_code("s_andn2_b64   exec, s[8:9], s[6:7]",0x8AFE0608,0x00000000,0);
-//	TEST_isa_op_code("s_andn2_b64   exec, s[6:7], s[0:1]",0x8AFE0006,0x00000000,0);
-//	TEST_isa_op_code("s_andn2_b64   exec, s[30:31], s[32:33]",0x8AFE201E,0x00000000,0);
-//	TEST_isa_op_code("s_andn2_b64   s[10:11], s[10:11], exec",0x8A8A7E0A,0x00000000,0);
-//	TEST_isa_op_code("s_andn2_b64   exec, s[6:7], exec",0x8AFE7E06,0x00000000,0);
-//	TEST_isa_op_code("s_andn2_b64   s[14:15], s[14:15], exec",0x8A8E7E0E,0x00000000,0);
-//	TEST_isa_op_code("s_andn2_b64   exec, s[6:7], exec",0x8AFE7E06,0x00000000,0);
-//	TEST_isa_op_code("s_andn2_b64   exec, s[10:11], s[0:1]",0x8AFE000A,0x00000000,0);
-//	TEST_isa_op_code("s_andn2_b64   exec, s[20:21], exec",0x8AFE7E14,0x00000000,0);
-//	TEST_isa_op_code("s_and_b64     exec, s[20:21], s[14:15]",0x87FE0E14,0x00000000,0);
+	TEST_isa_op_code("s_andn2_b64   exec, s[8:9], s[6:7]",0x8AFE0608,0x00000000,0);
+	TEST_isa_op_code("s_andn2_b64   exec, s[6:7], s[0:1]",0x8AFE0006,0x00000000,0);
+	TEST_isa_op_code("s_andn2_b64   exec, s[30:31], s[32:33]",0x8AFE201E,0x00000000,0);
+	TEST_isa_op_code("s_andn2_b64   s[10:11], s[10:11], exec",0x8A8A7E0A,0x00000000,0);
+	TEST_isa_op_code("s_andn2_b64   exec, s[6:7], exec",0x8AFE7E06,0x00000000,0);
+	TEST_isa_op_code("s_andn2_b64   s[14:15], s[14:15], exec",0x8A8E7E0E,0x00000000,0);
+	TEST_isa_op_code("s_andn2_b64   exec, s[6:7], exec",0x8AFE7E06,0x00000000,0);
+	TEST_isa_op_code("s_andn2_b64   exec, s[10:11], s[0:1]",0x8AFE000A,0x00000000,0);
+	TEST_isa_op_code("s_andn2_b64   exec, s[20:21], exec",0x8AFE7E14,0x00000000,0);
+	TEST_isa_op_code("s_and_b64     exec, s[20:21], s[14:15]",0x87FE0E14,0x00000000,0);
 }
 
 void S_AND_B64_test(CuTest* tc)
 {
-//	uncomment if aliases are supported
-//	TEST_isa_op_code("s_and_b64     exec, s[24:25], s[14:15]",0x87FE0E18,0x00000000,0);
-//	TEST_isa_op_code("s_and_b64     exec, s[20:21], s[14:15]",0x87FE0E14,0x00000000,0);
-//	TEST_isa_op_code("s_and_b64     exec, s[6:7], s[0:1]",0x87FE0006,0x00000000,0);
-//	TEST_isa_op_code("s_and_b64     exec, s[22:23], s[20:21]",0x87FE1416,0x00000000,0);
+	TEST_isa_op_code("s_and_b64     exec, s[24:25], s[14:15]",0x87FE0E18,0x00000000,0);
+	TEST_isa_op_code("s_and_b64     exec, s[20:21], s[14:15]",0x87FE0E14,0x00000000,0);
+	TEST_isa_op_code("s_and_b64     exec, s[6:7], s[0:1]",0x87FE0006,0x00000000,0);
+	TEST_isa_op_code("s_and_b64     exec, s[22:23], s[20:21]",0x87FE1416,0x00000000,0);
 }
 
 void S_AND_B32_test(CuTest* tc)
@@ -131,10 +135,10 @@ void S_SUBB_U32_test(CuTest* tc)
 	TEST_isa_op_code("s_subb_u32    s7, s7, 0",0x82878007,0x00000000,0);
 }
 
-CuSuite* VOP2_GetSuite(void)
+CuSuite* SOP2_GetSuite(void)
 {
 	CuSuite* suite = CuSuiteNew();
-
+	
 	SUITE_ADD_TEST(suite, S_MIN_U32_test);
 	SUITE_ADD_TEST(suite, S_MUL_I32_test);
 	SUITE_ADD_TEST(suite, S_LSHL_B32_test);
@@ -146,7 +150,7 @@ CuSuite* VOP2_GetSuite(void)
 	SUITE_ADD_TEST(suite, S_AND_B32_test);
 	SUITE_ADD_TEST(suite, S_SUB_U32_test);
 	SUITE_ADD_TEST(suite, S_SUBB_U32_test);
-
+	
 	return suite;
 }
 

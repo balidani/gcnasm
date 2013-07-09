@@ -2,7 +2,7 @@
 
 #include "CuTest.h"
 
-CuSuite* VOP2_GetSuite();
+CuSuite* SOP2_GetSuite();
 
 void run_all_tests(void)
 {
@@ -10,7 +10,7 @@ void run_all_tests(void)
 	CuSuite* suite = CuSuiteNew();
 
 	//add tests suits below
-	CuSuiteAddSuite(suite, VOP2_GetSuite());
+	CuSuiteAddSuite(suite, SOP2_GetSuite());
 
 	CuSuiteRun(suite);
 	CuSuiteSummary(suite, output);
