@@ -42,7 +42,8 @@ const isa_operand_type isa_simple_operand_list[] =
 	{"INL_FOUR_N",	0xF7, INL_FOUR_N	},
 	{"VCCZ",		0xFB, VCCZ			},
 	{"EXECZ",		0xFC, EXECZ			},
-	{"SCC",			0xFD, SCC			}
+	{"SCC",			0xFD, SCC			},
+	{"SRC_LDS_DIR",	0xFE, SRC_LDS_DIR	}
 };
 
 const unsigned int isa_simple_operand_count = sizeof(isa_simple_operand_list)
@@ -71,6 +72,7 @@ isa_operand* parseOperand(char *op_str)
 	char *end;
 	unsigned int i;
 
+	const char *range_delimiter = ":]";
 	char **op_alias, *alias_copy;
 
 	result = (isa_operand *) malloc(sizeof(isa_operand));
@@ -112,33 +114,17 @@ isa_operand* parseOperand(char *op_str)
 	}
 	else if ((*op_alias)[0] == 'V')
 	{
-		// Parse VGPR operand
-		result->value = (uint32_t) strtol((const char*) (*op_alias)+1, &end, 10);
-
-		if (*end)
-			ERROR("parsing operand (VGPR value)");
-
-		if (result->value > 255)
-			ERROR("invalid VGPR number (%d)", result->value);
-
-		result->op_code = VGPR_OP.op_code + result->value;
-		result->op_type = VGPR_OP;
-	}
-	else if ((*op_alias)[0] == 'S')
-	{
 		if ((*op_alias)[1] == '[')
 		{
-			// Parse SGPR range
-			const char *delimiter = ":]";
+			// Parse VGPR range
 			char *token;
-
 			uint32_t range_start;
 
-			token = strtok((char *) (*op_alias)+2, delimiter);
+			token = strtok((char *) (*op_alias)+2, range_delimiter);
 			range_start = (uint32_t) strtol((const char*) token, &end, 10);
 
 			if (*end)
-				ERROR("parsing operand (SGPR range start)");
+				ERROR("parsing operand (VGPR range start)");
 
 			// range_end is not used for now
 			// Multiplicity check is a bit confusing because it has to 
@@ -147,9 +133,41 @@ isa_operand* parseOperand(char *op_str)
 
 			// token = strtok(NULL, delimiter);
 			// range_end = strtol((const char*) token, &end, 10);
+			// if (*end)
+			// 	ERROR("parsing operand (VGPR range end)");
+
+			result->op_code = range_start;
+			result->op_type = VGPR_OP;
+		}
+		else
+		{
+			// Parse VGPR operand
+			result->value = (uint32_t) strtol((const char*) 
+				(*op_alias)+1, &end, 10);
 
 			if (*end)
-				ERROR("parsing operand (SGPR range end)");
+				ERROR("parsing operand (VGPR value)");
+
+			if (result->value > 255)
+				ERROR("invalid VGPR number (%d)", result->value);
+
+			result->op_code = VGPR_OP.op_code + result->value;
+			result->op_type = VGPR_OP;
+		}
+	}
+	else if ((*op_alias)[0] == 'S')
+	{
+		if ((*op_alias)[1] == '[')
+		{
+			// Parse SGPR range
+			char *token;
+			uint32_t range_start;
+
+			token = strtok((char *) (*op_alias)+2, range_delimiter);
+			range_start = (uint32_t) strtol((const char*) token, &end, 10);
+
+			if (*end)
+				ERROR("parsing operand (SGPR range start)");
 
 			result->op_code = range_start;
 			result->op_type = SGPR_OP;

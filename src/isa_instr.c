@@ -499,7 +499,6 @@ const isa_instr isa_instr_list[] =
 	{"V_CMP_CLASS_F64",				0x7d500000, VOPC},
 	{"V_CMPX_CLASS_F64",			0x7d700000, VOPC},
 
-	/*
 	// VOP3a instructions
 	{"V_MAD_LEGACY_F32",			0xD2800000, VOP3a}, 
 	{"V_MAD_F32",					0xD2820000, VOP3a}, 
@@ -551,8 +550,7 @@ const isa_instr isa_instr_list[] =
 	{"V_MSAD_U8",					0xD2E20000, VOP3a}, 
 	{"V_QSAD_U8",					0xD2E40000, VOP3a}, 
 	{"V_MQSAD_U8",					0xD2E60000, VOP3a}, 
-	{"V_TRIG_PREOP_F64",			0xD2E80000, VOP3a}
-	*/
+	{"V_TRIG_PREOP_F64",			0xD2E80000, VOP3a},
 
 	// MUBUF instructions
 	{"BUFFER_LOAD_FORMAT_X",		0xE0000000, MUBUF}, 

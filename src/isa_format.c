@@ -22,6 +22,7 @@ const isa_format isa_format_list[] =
 	{VOP2,	3},
 	{VOP1,	2},
 	{VOPC,	2},
+	{VOP3a, 6},
 	{MUBUF, 12},
 	{MTBUF, 13},
 	{MIMG,  12}

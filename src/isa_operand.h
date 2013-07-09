@@ -64,6 +64,8 @@ typedef enum
 	EXECZ,
 	// SCC
 	SCC,
+	// SRC_LDS_DIRECT, special for VOP3
+	SRC_LDS_DIR,
 	// Literal constant
 	LITERAL,
 	ERROR,

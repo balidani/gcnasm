@@ -28,6 +28,7 @@
 #include "vop2.h"
 #include "vop1.h"
 #include "vopc.h"
+#include "vop3a.h"
 #include "mubuf.h"
 #include "mtbuf.h"
 #include "mimg.h"
