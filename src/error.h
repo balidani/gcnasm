@@ -17,7 +17,7 @@
 
 #define ERROR(...)	{					\
 	fflush(stdout);						\
-	fprintf(stderr, "\n[*] Error: ");	\
+	fprintf(stderr, "[*] Error: ");	\
 	fprintf(stderr, __VA_ARGS__);		\
 	fprintf(stderr, "\n");				\
 	exit(EXIT_FAILURE);					\
@@ -25,7 +25,7 @@
 
 #define WARNING(...) {					\
 	fflush(stdout);						\
-	fprintf(stderr, "\n[*] Warning: ");	\
+	fprintf(stderr, "[*] Warning: ");	\
 	fprintf(stderr, __VA_ARGS__);		\
 	fprintf(stderr, "\n");				\
 }
