@@ -552,6 +552,10 @@ const isa_instr isa_instr_list[] =
 	{"V_MQSAD_U8",					0xD2E60000, VOP3a}, 
 	{"V_TRIG_PREOP_F64",			0xD2E80000, VOP3a},
 
+	// VOP3b instructions
+	{"V_DIV_SCALE_F32",				0xD2DA0000, VOP3b},
+	{"V_DIV_SCALE_F64",				0xD2DC0000, VOP3b},
+
 	// MUBUF instructions
 	{"BUFFER_LOAD_FORMAT_X",		0xE0000000, MUBUF}, 
 	{"BUFFER_LOAD_FORMAT_XY",		0xE0040000, MUBUF}, 

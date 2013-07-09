@@ -228,6 +228,9 @@ isa_op_code* parseLine(char *line)
 		case VOP3a:
 			result = parseVOP3a(isa_instr_list[i], argc, args);
 			break;
+		case VOP3b:
+			result = parseVOP3b(isa_instr_list[i], argc, args);
+			break;
 		case MUBUF:
 			result = parseMUBUF(isa_instr_list[i], argc, args);
 			break;

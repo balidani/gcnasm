@@ -1,7 +1,7 @@
 /*
  * AMD GCN ISA Assembler
  *
- * VOP3a instruction parser
+ * VOP3b instruction parser
  *
  * This software is Copyright 2013, Daniel Bali <balijanosdaniel at gmail.com>,
  * and it is hereby released to the general public under the following terms:
@@ -9,13 +9,13 @@
  * modification, are permitted.
  */
 
-#ifndef _VOP3A_H
-#define _VOP3A_H
+#ifndef _VOP3B_H
+#define _VOP3B_H
 
 #include "isa_instr.h"
 #include "isa_operand.h"
 #include "error.h"
 
-isa_op_code* parseVOP3a(isa_instr instr, int argc, char **args);
+isa_op_code* parseVOP3b(isa_instr instr, int argc, char **args);
 
 #endif

@@ -1,7 +1,7 @@
 /*
  * AMD GCN ISA Assembler
  *
- * VOP3a instruction parser
+ * VOP3b instruction parser
  *
  * This software is Copyright 2013, Daniel Bali <balijanosdaniel at gmail.com>,
  * and it is hereby released to the general public under the following terms:
@@ -12,97 +12,75 @@
 #include <string.h>
 #include <ctype.h>
 
-#include "vop3a.h"
+#include "vop3b.h"
 
 /**
- * Finds and removes NEG() and ABS() tags before the operand is processed
+ * Finds and removes NEG() tags before the operand is processed
  *
  * Returns 0x00 if neither is found
  * Returns 0x01 if NEG is found
- * Returns 0x10 if ABS is found
- * Returns 0x11 if both is found
+ *
+ * Ugly code duplication from format VOP3a
  */
 static char preProcessOp(char **op_str)
 {
 	char result = 0x00;
-	int found_tag;
 	int i;
 
 	// Convert to upper case
 	for (i = 0; (*op_str)[i]; ++i)
 		(*op_str)[i] = (char) toupper((*op_str)[i]);
 
-	do 
+	if (strncmp(*op_str, "NEG(", strlen("NEG(")) == 0)
 	{
-		found_tag = 0;
+		if (result & 0x10)
+			WARNING("ABS will only be applied _before_ NEG is");
 
-		if (strncmp(*op_str, "NEG(", strlen("NEG(")) == 0)
-		{
-			if (result & 0x10)
-				WARNING("ABS will only be applied _before_ NEG is");
+		result |= (char) 0x01;
 
-			result |= (char) 0x01;
+		*op_str += strlen("NEG(");
 
-			*op_str += strlen("NEG(");
-
-			if ((*op_str)[strlen(*op_str) - 1] == ')')
-				(*op_str)[strlen(*op_str) - 1] = '\0';
-			else
-				WARNING("unclosed NEG modifier");
-
-			found_tag = 1;
-		}
-		else if (strncmp(*op_str, "ABS(", strlen("ABS(")) == 0)
-		{
-			result |= (char) 0x10;
-
-			*op_str += strlen("ABS(");
-
-			if ((*op_str)[strlen(*op_str) - 1] == ')')
-				(*op_str)[strlen(*op_str) - 1] = '\0';
-			else
-				WARNING("unclosed ABS modifier");
-
-			found_tag = 1;
-		}
-	} 
-	while (found_tag);
+		if ((*op_str)[strlen(*op_str) - 1] == ')')
+			(*op_str)[strlen(*op_str) - 1] = '\0';
+		else
+			WARNING("unclosed NEG modifier");
+	}
 
 	return result;
 }
 
 /**
- * Parses instructions with a VOP3a encoding
+ * Parses instructions with a VOP3b encoding
  * 
- * MAGIC (6) | OP (9) | r (5) | CLAMP | ABS (3) | VDST (8)
+ * MAGIC (6) | OP (9) | r (2) | SDST (7) | VDST (8)
  * | NEG (3) | OMOD (2) | SRC2 (9) | SRC1 (9) | SRC0 (9)
  */
-isa_op_code* parseVOP3a(isa_instr instr, int argc, char **args)
+isa_op_code* parseVOP3b(isa_instr instr, int argc, char **args)
 {
-	char *vdst_str, *src0_str, *src1_str, *src2_str;
-	char omod_value, neg_value, abs_value, tag_result;
+	char *vdst_str, *sdst_str, *src0_str, *src1_str, *src2_str;
+	char omod_value, neg_value, tag_result;
 	int i, j;
 
-	isa_operand *vdst_op, *src0_op, 	// ISA operand structs
-		*src1_op, *src2_op; 			
+	isa_operand *vdst_op, *sdst_op,		// ISA operand structs
+		*src0_op, *src1_op, *src2_op; 			
 	isa_op_code *op_code;				// Generated opcode struct
 	
 	op_code = (isa_op_code *) malloc(sizeof(isa_op_code));
 	
 	omod_value = 0;
 	neg_value = 0;
-	abs_value = 0;
 
-	if (argc < 3)
+	if (argc < 4)
 		ERROR("number of passed operands is too low");
 
 	// Setup arguments
 	vdst_str	= args[0];
-	src0_str	= args[1];
-	src1_str	= args[2];
+	sdst_str	= args[1];
+	src0_str	= args[2];
+	src1_str	= args[3];
 
-	if (argc > 3)
-		src2_str = args[3];
+	if (argc > 4)
+		src2_str = args[4];
 	
 	// Parse operands
 	op_code->code = instr.op_code;
@@ -117,12 +95,18 @@ isa_op_code* parseVOP3a(isa_instr instr, int argc, char **args)
 
 	op_code->code |= vdst_op->op_code;
 
+	// SDST
+	sdst_op = parseOperand(sdst_str);
+
+	if (sdst_op->op_type.type >= SDST_OPERAND_TRESHOLD)
+		ERROR("incorrect value for SDST operand");
+
+	op_code->code |= (sdst_op->op_code << 8);
+
 	// SRC0
 	tag_result = preProcessOp(&src0_str);
 	if (tag_result & 0x01)
 		neg_value &= 1;
-	if (tag_result & 0x10)
-		abs_value &= 1;
 	
 	src0_op = parseOperand(src0_str);
 
@@ -141,8 +125,6 @@ isa_op_code* parseVOP3a(isa_instr instr, int argc, char **args)
 	tag_result = preProcessOp(&src1_str);
 	if (tag_result & 0x01)
 		neg_value &= 1 << 1;
-	if (tag_result & 0x10)
-		abs_value &= 1 << 1;
 
 	src1_op = parseOperand(src1_str);
 
@@ -163,8 +145,6 @@ isa_op_code* parseVOP3a(isa_instr instr, int argc, char **args)
 		tag_result = preProcessOp(&src2_str);
 		if (tag_result & 0x01)
 			neg_value &= 1 << 2;
-		if (tag_result & 0x10)
-			abs_value &= 1 << 2;
 
 		src2_op = parseOperand(src2_str);
 	}
@@ -193,9 +173,7 @@ isa_op_code* parseVOP3a(isa_instr instr, int argc, char **args)
 		for (j = 0; args[i][j]; ++j)
 			args[i][j] = (char) toupper(args[i][j]);
 
-		if (strcmp(args[i], "CLAMP") == 0)
-			op_code->code |= (1 << 11);
-		else if (strncmp(args[i], "DIV(", strlen("DIV(")) == 0)
+		if (strncmp(args[i], "DIV(", strlen("DIV(")) == 0)
 		{
 			switch (args[i][strlen("DIV(")])
 			{
@@ -236,9 +214,9 @@ isa_op_code* parseVOP3a(isa_instr instr, int argc, char **args)
 
 	op_code->literal |= ((uint32_t) omod_value << 27);
 	op_code->literal |= ((uint32_t) neg_value << 29);
-	op_code->code |= ((uint32_t) abs_value << 8);
 
 	free(vdst_op);
+	free(sdst_op);
 	free(src0_op);
 	free(src1_op);
 
