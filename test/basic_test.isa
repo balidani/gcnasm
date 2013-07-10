@@ -75,12 +75,17 @@ BUFFER_STORE_FORMAT_XYZW	v1, v0, s[4:7], 0, offen, 0x4
 
 ; MTBUF test
 
-tbuffer_load_format_x  v1, v1, s[4:7], 0 offen format:[BUF_DATA_FORMAT_32,BUF_NUM_FORMAT_FLOAT]
+tbuffer_load_format_x  v1, v1, s[4:7], 0 offen format:[BUF_DATA_FORMAT_32,BUF_NUM_FORMAT_FLOAT] offset:4
 
 ; MIMG test
 
-IMAGE_LOAD	v12, v13, s[0:3], s[4:7] slc lwe tfe r128 da glc unorm 0xC	;
+IMAGE_LOAD	v12, v13, s[0:3], s[4:7] slc lwe tfe r128 da glc unorm DMASK:0xC
 
 ; VOP3a test
 
 V_LSHL_B64 v0 ABS(v1) NEG(v2) v[3:4] MUL(4) clamp
+
+; DS tests
+
+ds_write_b32  v0, v2, v3, v0                   ; D8340000 00000302 
+ds_write2_b32  v0, v16, v15, v17 offset1:1     ; D8380100 00110F10

@@ -13,20 +13,21 @@
 
 const isa_format isa_format_list[] = 
 {
-	{SOP2,	3},
-	{SOPK,	2},
-	{SOP1,	2},
-	{SOPC,	2},
-	{SOPP,	1},
-	{SMRD,	3},
-	{VOP2,	3},
-	{VOP1,	2},
-	{VOPC,	2},
-	{VOP3a, 6},
-	{VOP3b, 6},
-	{MUBUF, 12},
-	{MTBUF, 13},
-	{MIMG,  12}
+	{SOP2,		3},
+	{SOPK,		2},
+	{SOP1,		2},
+	{SOPC,		2},
+	{SOPP,		1},
+	{SMRD,		3},
+	{VOP2,		3},
+	{VOP1,		2},
+	{VOPC,		2},
+	{VOP3a,		6},
+	{VOP3b,		6},
+	{DS,		7},
+	{MUBUF, 	12},
+	{MTBUF, 	13},
+	{MIMG,  	12}
 };
 
 const int isa_format_count = sizeof(isa_format_list) / sizeof(isa_format);

@@ -30,6 +30,7 @@
 #include "vopc.h"
 #include "vop3a.h"
 #include "vop3b.h"
+#include "ds.h"
 #include "mubuf.h"
 #include "mtbuf.h"
 #include "mimg.h"
