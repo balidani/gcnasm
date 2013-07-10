@@ -24,7 +24,6 @@
 isa_op_code* parseMUBUF(isa_instr instr, int argc, char **args)
 {
 	char *vdata_str, *vaddr_str, *srsrc_str, *soffset_str;
-	int offset_parsed;
 	int i, j;
 
 	isa_operand *vdata_op, *vaddr_op, 	// ISA operand structs
@@ -88,8 +87,6 @@ isa_op_code* parseMUBUF(isa_instr instr, int argc, char **args)
 	op_code->literal |= soffset_op->op_code << 24;
 
 	// Parse optional parameters
-	offset_parsed = 0;
-
 	for (i = 4; i < argc; ++i)
 	{
 		// Convert to upper case
@@ -110,15 +107,15 @@ isa_op_code* parseMUBUF(isa_instr instr, int argc, char **args)
 			op_code->literal |= (1 << 22);
 		else if (strcmp(args[i], "TFE") == 0)
 			op_code->literal |= (1 << 23);
-		else if (!offset_parsed)
+		else if (strncmp(args[i], "OFFSET:", strlen("OFFSET:")) == 0)
 		{
-			isa_operand *offset_op = parseOperand(args[i]);
+			isa_operand *offset_op = parseOperand(args[i] 
+				+ strlen("OFFSET:"));
 
 			if (!isConstantOperand(offset_op))
 				ERROR("non-literal value supplied for OFFSET operand");
 
 			op_code->code |= offset_op->value;
-			offset_parsed = 1;
 			
 			free(offset_op);
 		}

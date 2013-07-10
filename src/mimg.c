@@ -23,7 +23,6 @@
 isa_op_code* parseMIMG(isa_instr instr, int argc, char **args)
 {
 	char *vdata_str, *vaddr_str, *ssamp_str, *srsrc_str;
-	int dmask_parsed;
 	int i, j;
 
 	isa_operand *vdata_op, *vaddr_op, 	// ISA operand structs
@@ -86,8 +85,6 @@ isa_op_code* parseMIMG(isa_instr instr, int argc, char **args)
 	op_code->literal |= ssamp_op->op_code << 21;
 
 	// Parse optional parameters
-	dmask_parsed = 0;
-
 	for (i = 4; i < argc; ++i)
 	{
 		// Convert to upper case
@@ -108,9 +105,9 @@ isa_op_code* parseMIMG(isa_instr instr, int argc, char **args)
 			op_code->code |= (1 << 13);
 		else if (strcmp(args[i], "UNORM") == 0)
 			op_code->code |= (1 << 12);
-		else if (!dmask_parsed)
+		else if (strncmp(args[i], "DMASK:", strlen("DMASK:")) == 0)
 		{
-			isa_operand *dmask_op = parseOperand(args[i]);
+			isa_operand *dmask_op = parseOperand(args[i] + strlen("DMASK:"));
 
 			if (!isConstantOperand(dmask_op))
 				ERROR("non-literal value supplied for DMASK operand");
@@ -119,7 +116,6 @@ isa_op_code* parseMIMG(isa_instr instr, int argc, char **args)
 			dmask_op->value &= 0xF;
 
 			op_code->code |= (dmask_op->value) << 8;
-			dmask_parsed = 1;
 			
 			free(dmask_op);
 		}
