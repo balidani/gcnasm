@@ -36,6 +36,9 @@ void initAlias()
 	addAlias("VCC", "VCC_LO");
 	addAlias("TBA", "TBA_LO");
 	addAlias("TMA", "TMA_LO");
+	addAlias("LGKMCNT(0)", "0x7F");
+	addAlias("LVMCNT(0)", "0x1F70");
+	addAlias("EXPCNT(0)", "0x1F0F");
 }
 
 /**
