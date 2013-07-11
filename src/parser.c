@@ -91,6 +91,7 @@ void parseFile(const char *input, const char *output)
 		isa_op_code *result;
 
 		result = parseLine(line);
+		line_number++;
 
 		if (result == NULL)
 			continue;

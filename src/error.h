@@ -15,19 +15,21 @@
 #ifndef _ERROR_H
 #define _ERROR_H
 
-#define ERROR(...)	{					\
-	fflush(stdout);						\
-	fprintf(stderr, "[*] Error: ");	\
-	fprintf(stderr, __VA_ARGS__);		\
-	fprintf(stderr, "\n");				\
-	exit(EXIT_FAILURE);					\
+#define ERROR(...)	{										\
+	fflush(stdout);											\
+	fprintf(stderr, "[Line %d] Error: ", line_number);		\
+	fprintf(stderr, __VA_ARGS__);							\
+	fprintf(stderr, "\n");									\
+	exit(EXIT_FAILURE);										\
 }
 
-#define WARNING(...) {					\
-	fflush(stdout);						\
-	fprintf(stderr, "[*] Warning: ");	\
-	fprintf(stderr, __VA_ARGS__);		\
-	fprintf(stderr, "\n");				\
+#define WARNING(...) {										\
+	fflush(stdout);											\
+	fprintf(stderr, "[Line %d] Warning: ", line_number);	\
+	fprintf(stderr, __VA_ARGS__);							\
+	fprintf(stderr, "\n");									\
 }
+
+extern int line_number;
 
 #endif

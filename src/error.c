@@ -11,4 +11,4 @@
 
 #include "error.h"
 
-// Empty for now
+int line_number = 1;
