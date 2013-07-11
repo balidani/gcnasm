@@ -78,7 +78,7 @@ isa_op_code* parseSMRD(isa_instr instr, int argc, char **args)
 
 		char *end;
 
-		if (strncmp(offset_str, "0x", 2) == 0)
+		if (strncmp(offset_str, "0X", 2) == 0)
 		{
 			offset_op->op_code = (uint32_t) strtoll((const char*) 
 				offset_str+2, &end, 16);
