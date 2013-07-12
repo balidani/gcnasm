@@ -28,8 +28,8 @@ BINARY_GEN = ../../run/binary_gen
 
 default:
 	@echo "To build, type:"
-	@echo "x86-64	Linux, 64bit"
-	@echo "x86	Linux, 32bit"
+	@echo "make x86-64	Linux, 64bit"
+	@echo "make x86		Linux, 32bit"
 
 x86-64:
 	$(CC) $(CFILES) $(CFLAGS) -L'$(OCLROOT)/lib/x86_64' -lOpenCL -o $(BINARY_GEN)
