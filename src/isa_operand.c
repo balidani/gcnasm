@@ -68,7 +68,7 @@ const unsigned int isa_mapped_operand_count = sizeof(isa_mapped_operand_list)
  */
 isa_operand* parseOperand(char *op_str)
 {
-	isa_operand* result;
+	isa_operand *result;
 	char *end;
 	unsigned int i;
 
@@ -92,7 +92,7 @@ isa_operand* parseOperand(char *op_str)
 	if (i < alias_count)
 	{
 		// Copy the operand part of the alias and point to it
-		alias_copy = (char *) calloc(strlen(alias_list[i].operand), 
+		alias_copy = (char *) calloc(strlen(alias_list[i].operand) + 1, 
 			sizeof(char));
 
 		strncpy(alias_copy, alias_list[i].operand, 
@@ -140,7 +140,7 @@ isa_operand* parseOperand(char *op_str)
 			result->op_type = VGPR_OP;
 		}
 		else
-		{
+		{			
 			// Parse VGPR operand
 			result->value = (uint32_t) strtol((const char*) 
 				(*op_alias)+1, &end, 10);
