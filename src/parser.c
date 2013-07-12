@@ -267,53 +267,26 @@ isa_op_code* parseLine(char *line)
 
 	switch (isa_instr_list[i].encoding)
 	{
-		case SOP2: 
-			result = parseSOP2(isa_instr_list[i], argc, args);
-			break;
-		case SOPK: 
-			result = parseSOPK(isa_instr_list[i], argc, args);
-			break;
-		case SOP1:
-			result = parseSOP1(isa_instr_list[i], argc, args);
-			break;
-		case SOPC:
-			result = parseSOPC(isa_instr_list[i], argc, args);
-			break;
-		case SOPP:
-			result = parseSOPP(isa_instr_list[i], argc, args);
-			break;
-		case SMRD:
-			result = parseSMRD(isa_instr_list[i], argc, args);
-			break;
-		case VOP2:
-			// VOP3a/b support still needed
-			result = parseVOP2(isa_instr_list[i], argc, args);
-			break;
-		case VOP1:
-			// VOP3a support (is it needed here?)
-			result = parseVOP1(isa_instr_list[i], argc, args);
-			break;
+		#define CASE_PARSE(type) case type: result = parse##type(isa_instr_list[i], argc, args); break;
+		CASE_PARSE(SOP2)
+		CASE_PARSE(SOPK)
+		CASE_PARSE(SOP1)
+		CASE_PARSE(SOPC)
+		CASE_PARSE(SOPP)
+		CASE_PARSE(SMRD)
+		CASE_PARSE(VOP2)
+		CASE_PARSE(VOP1) // VOP3a/b support still needed
+		//CASE_PARSE(VOPC)
+		CASE_PARSE(VOP3a)
+		CASE_PARSE(VOP3b)
+		CASE_PARSE(DS)
+		CASE_PARSE(MUBUF)
+		CASE_PARSE(MTBUF)
+		CASE_PARSE(MIMG)
+		#undef CASE_PARSE
+
 		case VOPC:
-			// result = parseVOPC(isa_instr_list[i], argc, args);
 			result = parseAlternate(isa_instr_list[i], argc, args);
-			break;
-		case VOP3a:
-			result = parseVOP3a(isa_instr_list[i], argc, args);
-			break;
-		case VOP3b:
-			result = parseVOP3b(isa_instr_list[i], argc, args);
-			break;
-		case DS:
-			result = parseDS(isa_instr_list[i], argc, args);
-			break;
-		case MUBUF:
-			result = parseMUBUF(isa_instr_list[i], argc, args);
-			break;
-		case MTBUF:
-			result = parseMTBUF(isa_instr_list[i], argc, args);
-			break;
-		case MIMG:
-			result = parseMIMG(isa_instr_list[i], argc, args);
 			break;
 		default:
 			WARNING("unsupported encoding type for instruction '%s'", 
