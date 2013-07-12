@@ -89,3 +89,5 @@ V_LSHL_B64 v0 ABS(v1) NEG(v2) v[3:4] MUL(4) clamp
 
 ds_write_b32  v0, v2, v3, v0                   ; D8340000 00000302 
 ds_write2_b32  v0, v16, v15, v17 offset1:1     ; D8380100 00110F10
+
+; Basic test end

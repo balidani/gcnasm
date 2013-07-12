@@ -101,153 +101,177 @@ isa_operand* parseOperand(char *op_str)
 		op_alias = &alias_copy;
 	}
 
-	// Look up simple (built-in) operand types
-	for (i = 0; i < isa_simple_operand_count; ++i)
-		if (strncmp(*op_alias, isa_simple_operand_list[i].name, 
-				strlen(isa_simple_operand_list[i].name)) == 0)
+	// Look up labels
+	for (i = 0; i < label_count; ++i) 
+	{
+		if (strcmp(*op_alias, label_list[i].name) == 0)
 			break;
-
-	if (i < isa_simple_operand_count)
-	{
-		result->op_code = isa_simple_operand_list[i].op_code;
-		result->op_type = isa_simple_operand_list[i];
 	}
-	else if ((*op_alias)[0] == 'V')
+
+	if (i < label_count)
 	{
-		if ((*op_alias)[1] == '[')
-		{
-			// Parse VGPR range
-			char *token;
-			uint32_t range_start;
+		// Found label
+		// Add to a list for post-processing
 
-			token = strtok((char *) (*op_alias)+2, range_delimiter);
-			range_start = (uint32_t) strtol((const char*) token, &end, 10);
+		addOccurrence(i, microcode.ptr);
 
-			if (*end)
-				ERROR("parsing operand (VGPR range start)");
-
-			// range_end is not used for now
-			// Multiplicity check is a bit confusing because it has to 
-			// be handled differently both for different type of instructions
-			// and different type of operands (in format SMRD)
-
-			// token = strtok(NULL, delimiter);
-			// range_end = strtol((const char*) token, &end, 10);
-			// if (*end)
-			// 	ERROR("parsing operand (VGPR range end)");
-
-			result->op_code = range_start;
-			result->op_type = VGPR_OP;
-		}
-		else
-		{			
-			// Parse VGPR operand
-			result->value = (uint32_t) strtol((const char*) 
-				(*op_alias)+1, &end, 10);
-
-			if (*end)
-				ERROR("parsing operand (VGPR value)");
-
-			if (result->value > 255)
-				ERROR("invalid VGPR number (%d)", result->value);
-
-			result->op_code = VGPR_OP.op_code + result->value;
-			result->op_type = VGPR_OP;
-		}
-	}
-	else if ((*op_alias)[0] == 'S')
-	{
-		if ((*op_alias)[1] == '[')
-		{
-			// Parse SGPR range
-			char *token;
-			uint32_t range_start;
-
-			token = strtok((char *) (*op_alias)+2, range_delimiter);
-			range_start = (uint32_t) strtol((const char*) token, &end, 10);
-
-			if (*end)
-				ERROR("parsing operand (SGPR range start)");
-
-			result->op_code = range_start;
-			result->op_type = SGPR_OP;
-		}
-		else
-		{
-			// Parse SGPR operand
-			result->value = (uint32_t) strtol((const char*) (*op_alias)+1, 
-				&end, 10);
-
-			if (*end)
-				ERROR("parsing operand (SGPR value)");
-
-			if (result->value > 103)
-				ERROR("invalid SGPR number (%d)", result->value);
-
-			result->op_code = SGPR_OP.op_code + result->value;
-			result->op_type = SGPR_OP;
-		}
-	}
-	else if ((*op_alias)[0] == 'T')
-	{
-		// Parse TTMP operand
-		result->value = (uint32_t) strtol((const char*) (*op_alias)+1, &end, 10);
-
-		if (*end)
-			ERROR("parsing operand (TTMP value)");
-
-		if (result->value > 11)
-			ERROR("invalid TTMP number (%d)", result->value);
-
-		result->op_code = TTMP_OP.op_code + result->value;
-		result->op_type = TTMP_OP;
+		result->value = 0x0000;
+		result->op_code = LITERAL_OP.op_code;
+		result->op_type = LITERAL_OP;
 	}
 	else
 	{
-		// Parse literal constant
-		
-		// 64-bit "real" value (so the last bit of the uint32_t 
-		// is not lost on the sign in case it's needed)
-		int64_t real_value;
+		// Look up simple (built-in) operand types
+		for (i = 0; i < isa_simple_operand_count; ++i)
+			if (strncmp(*op_alias, isa_simple_operand_list[i].name, 
+					strlen(isa_simple_operand_list[i].name)) == 0)
+				break;
 
-		if (strncmp((*op_alias), "0X", 2) == 0)
+		if (i < isa_simple_operand_count)
 		{
-			real_value = strtoll((const char*) (*op_alias)+2, &end, 16);
-			result->value = (uint32_t) real_value;
+			result->op_code = isa_simple_operand_list[i].op_code;
+			result->op_type = isa_simple_operand_list[i];
+		}
+		else if ((*op_alias)[0] == 'V')
+		{
+			if ((*op_alias)[1] == '[')
+			{
+				// Parse VGPR range
+				char *token;
+				uint32_t range_start;
+
+				token = strtok((char *) (*op_alias)+2, range_delimiter);
+				range_start = (uint32_t) strtol((const char*) token, 
+					&end, 10);
+
+				if (*end)
+					ERROR("parsing operand (VGPR range start)");
+
+				// range_end is not used for now
+				// Multiplicity check is a bit confusing because it has to be
+				// handled differently both for different type of instructions
+				// and different type of operands (in format SMRD)
+
+				// token = strtok(NULL, delimiter);
+				// range_end = strtol((const char*) token, &end, 10);
+				// if (*end)
+				// 	ERROR("parsing operand (VGPR range end)");
+
+				result->op_code = range_start;
+				result->op_type = VGPR_OP;
+			}
+			else
+			{			
+				// Parse VGPR operand
+				result->value = (uint32_t) strtol((const char*) 
+					(*op_alias)+1, &end, 10);
+
+				if (*end)
+					ERROR("parsing operand (VGPR value)");
+
+				if (result->value > 255)
+					ERROR("invalid VGPR number (%d)", result->value);
+
+				result->op_code = VGPR_OP.op_code + result->value;
+				result->op_type = VGPR_OP;
+			}
+		}
+		else if ((*op_alias)[0] == 'S')
+		{
+			if ((*op_alias)[1] == '[')
+			{
+				// Parse SGPR range
+				char *token;
+				uint32_t range_start;
+
+				token = strtok((char *) (*op_alias)+2, range_delimiter);
+				range_start = (uint32_t) strtol((const char*) token, 
+					&end, 10);
+
+				if (*end)
+					ERROR("parsing operand (SGPR range start)");
+
+				result->op_code = range_start;
+				result->op_type = SGPR_OP;
+			}
+			else
+			{
+				// Parse SGPR operand
+				result->value = (uint32_t) strtol(
+					(const char*) (*op_alias)+1, &end, 10);
+
+				if (*end)
+					ERROR("parsing operand (SGPR value)");
+
+				if (result->value > 103)
+					ERROR("invalid SGPR number (%d)", result->value);
+
+				result->op_code = SGPR_OP.op_code + result->value;
+				result->op_type = SGPR_OP;
+			}
+		}
+		else if ((*op_alias)[0] == 'T')
+		{
+			// Parse TTMP operand
+			result->value = (uint32_t) strtol(
+				(const char*) (*op_alias)+1, &end, 10);
+
+			if (*end)
+				ERROR("parsing operand (TTMP value)");
+
+			if (result->value > 11)
+				ERROR("invalid TTMP number (%d)", result->value);
+
+			result->op_code = TTMP_OP.op_code + result->value;
+			result->op_type = TTMP_OP;
 		}
 		else
 		{
-			real_value = strtoll((const char*) (*op_alias), &end, 10);
-			result->value = (uint32_t) real_value;
-		}
+			// Parse literal constant
+			
+			// 64-bit "real" value (so the last bit of the uint32_t 
+			// is not lost on the sign in case it's needed)
+			int64_t real_value;
 
-		if (*end)
-			ERROR("parsing operand (literal value)");
+			if (strncmp((*op_alias), "0X", 2) == 0)
+			{
+				real_value = strtoll((const char*) (*op_alias)+2, &end, 16);
+				result->value = (uint32_t) real_value;
+			}
+			else
+			{
+				real_value = strtoll((const char*) (*op_alias), &end, 10);
+				result->value = (uint32_t) real_value;
+			}
 
-		if (real_value == 0)
-		{
+			if (*end)
+				ERROR("parsing operand (literal value)");
 
-			result->op_code = ZERO_OP.op_code;
-			result->op_type = ZERO_OP;
-		}
-		else if (real_value > 0 && real_value <= 64)
-		{
-			result->op_code = INL_POS_OP.op_code + result->value - 1;
-			result->op_type = INL_POS_OP;
-		}
-		else if (real_value >= -16 && real_value <= -1)
-		{
-			// TODO: this WILL treat large positive values as 
-			// inline negative constants, this should be fixed soon
-			result->op_code = INL_NEG_OP.op_code + (-result->value) - 1;
-			result->op_type = INL_NEG_OP;
-		}
-		else
-		{
-			result->op_code = LITERAL_OP.op_code;
-			result->op_type = LITERAL_OP;
-		}
+			if (real_value == 0)
+			{
 
+				result->op_code = ZERO_OP.op_code;
+				result->op_type = ZERO_OP;
+			}
+			else if (real_value > 0 && real_value <= 64)
+			{
+				result->op_code = INL_POS_OP.op_code + result->value - 1;
+				result->op_type = INL_POS_OP;
+			}
+			else if (real_value >= -16 && real_value <= -1)
+			{
+				// TODO: this WILL treat large positive values as 
+				// inline negative constants, this should be fixed soon
+				result->op_code = INL_NEG_OP.op_code + (-result->value) - 1;
+				result->op_type = INL_NEG_OP;
+			}
+			else
+			{
+				result->op_code = LITERAL_OP.op_code;
+				result->op_type = LITERAL_OP;
+			}
+
+		}
 	}
 
 	if (alias_copy != NULL)

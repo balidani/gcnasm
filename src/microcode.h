@@ -1,7 +1,7 @@
 /*
  * AMD GCN ISA Assembler
  *
- * GCN ISA instruction formats
+ * Microcode module
  *
  * This software is Copyright 2013, Daniel Bali <balijanosdaniel at gmail.com>,
  * and it is hereby released to the general public under the following terms:
@@ -9,20 +9,16 @@
  * modification, are permitted.
  */
 
-#ifndef _ISA_FORMAT_H
-#define _ISA_FORMAT_H
+#ifndef _MICRO_H
+#define _MICRO_H
 
 #include <stdint.h>
 
-#include "isa_instr.h"
+typedef struct {
+	uint32_t *code;
+	uint32_t ptr;
+} microcode_struct;
 
-typedef struct 
-{
-	isa_instr_enc encoding;		// Instruction format encoding
-	uint8_t max_op_count;		// Number of maximum operands
-} isa_format;
-
-extern const isa_format isa_format_list[];
-extern const unsigned int isa_format_count;
+extern microcode_struct microcode;
 
 #endif

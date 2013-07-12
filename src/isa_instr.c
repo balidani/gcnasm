@@ -859,4 +859,4 @@ const isa_instr isa_instr_list[] =
 
 };
 
-const int isa_instr_count = sizeof(isa_instr_list) / sizeof(isa_instr);
+const unsigned int isa_instr_count = sizeof(isa_instr_list) / sizeof(isa_instr);

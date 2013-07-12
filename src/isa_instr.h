@@ -51,6 +51,6 @@ typedef struct
 } isa_instr;
 
 extern const isa_instr isa_instr_list[];
-extern const int isa_instr_count;
+extern const unsigned int isa_instr_count;
 
 #endif

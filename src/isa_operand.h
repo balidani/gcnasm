@@ -14,7 +14,9 @@
 
 #include <stdint.h>
 
+#include "microcode.h"
 #include "alias.h"
+#include "label.h"
 #include "error.h"
 
 // These are still SOP2 dependent,

@@ -14,6 +14,7 @@
 #include <stdlib.h>
 
 #include "alias.h"
+#include "label.h"
 #include "parser.h"
 
 int main(int argc, char **argv) 
@@ -24,14 +25,16 @@ int main(int argc, char **argv)
 		exit(EXIT_FAILURE);
 	}
 
-	// Initialize alias list
+	// Initialize alias, label list
 	initAlias();
+	initLabel();
 
 	// Parse the input ISA file and write to output
 	parseFile(argv[1], argv[2]);
 
-	// Free alias list
+	// Free alias, label list
 	clearAlias();
+	clearLabel();
 
 	exit(EXIT_SUCCESS);
 }

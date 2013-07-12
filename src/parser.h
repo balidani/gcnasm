@@ -14,10 +14,12 @@
 
 #include <stdint.h>
 
+#include "microcode.h"
 #include "isa_instr.h"
 #include "isa_operand.h"
 #include "isa_format.h"
 #include "error.h"
+#include "label.h"
 
 #include "sop2.h"
 #include "sopk.h"

@@ -30,4 +30,4 @@ const isa_format isa_format_list[] =
 	{MIMG,  	12}
 };
 
-const int isa_format_count = sizeof(isa_format_list) / sizeof(isa_format);
+const unsigned int isa_format_count = sizeof(isa_format_list) / sizeof(isa_format);

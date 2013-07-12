@@ -1,0 +1,512 @@
+;
+; AMD GCN ISA Assembler
+;
+; raw-md4-opencl test ISA assembly file
+;
+; This should produce the same output (byte by byte) as 
+; the microcode on the raw-md4-opencl format
+;
+; This software is Copyright 2013, Daniel Bali <balijanosdaniel at gmail.com>,
+; and it is hereby released to the general public under the following terms:
+; Redistribution and use in source and binary forms, with or without
+; modification, are permitted.
+;
+s_buffer_load_dword  s0, s[4:7], 0x04                     ; C2000504
+s_buffer_load_dword  s1, s[4:7], 0x18                     ; C2008518
+s_waitcnt     lgkmcnt(0)                                  ; BF8C007F
+s_min_u32     s0, s0, 0x0000ffff                          ; 8380FF00 0000FFFF
+s_buffer_load_dword  s13, s[8:11], 0x04                   ; C2068904
+v_mov_b32     v1, s0                                      ; 7E020200
+v_mul_i32_i24  v1, s12, v1                                ; 1202020C
+v_add_i32     v0, vcc, v0, v1                             ; 4A000300
+v_add_i32     v0, vcc, s1, v0                             ; 4A000001
+v_lshlrev_b32  v1, 2, v0                                  ; 34020082
+s_load_dwordx4  s[20:23], s[2:3], 0x58                    ; C08A0358
+s_waitcnt     lgkmcnt(0)                                  ; BF8C007F
+v_add_i32     v2, vcc, s13, v1                            ; 4A04020D
+tbuffer_load_format_x  v2, v2, s[20:23], 0 offen format:[BUF_DATA_FORMAT_32,BUF_NUM_FORMAT_FLOAT] ; EBA01000 80050202
+v_mov_b32     v3, 0                                       ; 7E060280
+v_mov_b32     v41, 0                                      ; 7E520280
+v_mov_b32     v40, 0                                      ; 7E500280
+v_mov_b32     v39, 0                                      ; 7E4E0280
+v_mov_b32     v38, 0                                      ; 7E4C0280
+v_mov_b32     v37, 0                                      ; 7E4A0280
+v_mov_b32     v36, 0                                      ; 7E480280
+v_mov_b32     v35, 0                                      ; 7E460280
+v_mov_b32     v34, 0                                      ; 7E440280
+v_mov_b32     v33, 0                                      ; 7E420280
+v_mov_b32     v32, 0                                      ; 7E400280
+v_mov_b32     v31, 0                                      ; 7E3E0280
+v_mov_b32     v30, 0                                      ; 7E3C0280
+v_mov_b32     v29, 0                                      ; 7E3A0280
+s_waitcnt     vmcnt(0)                                    ; BF8C1F70
+v_and_b32     v4, 63, v2                                  ; 360804BF
+v_mov_b32     v28, 0                                      ; 7E380280
+v_add_i32     v5, vcc, 3, v4                              ; 4A0A0883
+v_mov_b32     v27, 0                                      ; 7E360280
+v_lshrrev_b32  v5, 2, v5                                  ; 2C0A0A82
+s_buffer_load_dword  s0, s[8:11], 0x00                    ; C2000900
+s_buffer_load_dword  s1, s[8:11], 0x08                    ; C2008908
+s_buffer_load_dword  s4, s[4:7], 0x00                     ; C2020500
+v_mov_b32     v26, 0                                      ; 7E340280
+
+
+; LINE ALTERED
+; v_cmp_eq_i32  s[6:7], v5, 0                             ; D1040006 00010105
+v_cmp_eq_i32  s[6:7], s0, v5, 0                           ; D1040006 00010105
+
+
+s_mov_b64     s[8:9], exec                                ; BE88047E
+s_andn2_b64   exec, s[8:9], s[6:7]                        ; 8AFE0608
+v_lshrrev_b32  v3, 4, v2                                  ; 2C060484
+s_cbranch_execz  label_0051                               ; BF880023
+v_and_b32     v3, 0x0ffffffc, v3                          ; 360606FF 0FFFFFFC
+s_waitcnt     lgkmcnt(0)                                  ; BF8C007F
+v_add_i32     v3, vcc, s0, v3                             ; 4A060600
+s_load_dwordx4  s[20:23], s[2:3], 0x60                    ; C08A0360
+s_mov_b64     s[6:7], exec                                ; BE86047E
+v_mov_b32     v6, 0                                       ; 7E0C0280
+label_0035:
+v_lshlrev_b32  v7, 2, v6                                  ; 340E0C82
+v_add_i32     v8, vcc, v3, v7                             ; 4A100F03
+s_waitcnt     lgkmcnt(0)                                  ; BF8C007F
+tbuffer_load_format_x  v8, v8, s[20:23], 0 offen format:[BUF_DATA_FORMAT_32,BUF_NUM_FORMAT_FLOAT] ; EBA01000 80050808
+v_add_i32     v6, vcc, 1, v6                              ; 4A0C0C81
+v_lshrrev_b32  v24, 2, v7                                 ; 2C300E82
+s_mov_b64     s[26:27], exec                              ; BE9A047E
+s_waitcnt     vmcnt(0)                                    ; BF8C1F70
+s_cbranch_execz  label_004A                               ; BF88000B
+label_003F:
+v_readfirstlane_b32  s24, v24                             ; 7E300518
+s_mov_b32     m0, s24                                     ; BEFC0318
+s_mov_b64     s[28:29], exec                              ; BE9C047E
+
+
+; LINE ALTERED
+; v_cmpx_eq_i32  s[30:31], s24, v24                       ; D124001E 00023018
+v_cmpx_eq_i32  s[30:31], s0, s24, v24                     ; D124001E 00023018
+
+
+s_andn2_b64   s[28:29], s[28:29], s[30:31]                ; 8A9C1E1C
+
+
+; LINE ALTERED
+; v_cmpx_lt_u32  s[30:31], m0, 40                         ; D1A2001E 0001507C
+v_cmpx_lt_u32  s[30:31], s0, m0, 40                       ; D1A2001E 0001507C
+
+
+v_movreld_b32  v26, v8                                    ; 7E348508
+s_mov_b64     exec, s[28:29]                              ; BEFE041C
+s_cbranch_execnz  label_003F                              ; BF89FFF5
+label_004A:
+s_mov_b64     exec, s[26:27]                              ; BEFE041A
+
+
+; LINE ALTERED
+; v_cmp_gt_u32  s[10:11], v5, v6                          ; D188000A 00020D05
+v_cmp_gt_u32  s[10:11], s0, v5, v6                        ; D188000A 00020D05
+
+
+s_and_b64     exec, exec, s[10:11]                        ; 87FE0A7E
+s_cbranch_execz  label_0050                               ; BF880001
+s_branch      label_0035                                  ; BF82FFE5
+label_0050:
+s_mov_b64     exec, s[6:7]                                ; BEFE0406
+label_0051:
+s_mov_b64     exec, s[8:9]                                ; BEFE0408
+v_and_b32     v3, 60, v2                                  ; 360604BC
+v_lshrrev_b32  v24, 2, v3                                 ; 2C300682
+s_mov_b64     s[26:27], exec                              ; BE9A047E
+s_cbranch_execz  label_0062                               ; BF88000C
+label_0056:
+v_readfirstlane_b32  s24, v24                             ; 7E300518
+s_mov_b32     m0, s24                                     ; BEFC0318
+s_mov_b64     s[28:29], exec                              ; BE9C047E
+
+
+; LINE ALTERED
+; v_cmpx_eq_i32  s[30:31], s24, v24                       ; D124001E 00023018
+v_cmpx_eq_i32  s[30:31], s0, s24, v24                     ; D124001E 00023018
+
+
+s_andn2_b64   s[28:29], s[28:29], s[30:31]                ; 8A9C1E1C
+v_mov_b32     v5, 0                                       ; 7E0A0280
+
+
+; LINE ALTERED
+; v_cmpx_lt_u32  s[30:31], m0, 40                         ; D1A2001E 0001507C
+v_cmpx_lt_u32  s[30:31], s0, m0, 40                       ; D1A2001E 0001507C
+
+
+v_movrels_b32  v5, v26                                    ; 7E0A871A
+s_mov_b64     exec, s[28:29]                              ; BEFE041C
+s_cbranch_execnz  label_0056                              ; BF89FFF4
+label_0062:
+s_mov_b64     exec, s[26:27]                              ; BEFE041A
+v_lshlrev_b32  v2, 3, v2                                  ; 34040483
+v_and_b32     v2, 24, v2                                  ; 36040498
+v_lshl_b32    v6, 0x000000ff, v2                          ; 320C04FF 000000FF
+v_not_b32     v6, v6                                      ; 7E0C6F06
+v_lshl_b32    v2, 0x00000080, v2                          ; 320404FF 00000080
+v_and_b32     v5, v6, v5                                  ; 360A0B06
+v_add_i32     v2, vcc, v2, v5                             ; 4A040B02
+v_lshrrev_b32  v24, 2, v3                                 ; 2C300682
+s_cbranch_execz  label_0079                               ; BF88000B
+label_006E:
+v_readfirstlane_b32  s24, v24                             ; 7E300518
+s_mov_b32     m0, s24                                     ; BEFC0318
+s_mov_b64     s[28:29], exec                              ; BE9C047E
+
+
+; LINE ALTERED
+; v_cmpx_eq_i32  s[30:31], s24, v24                       ; D124001E 00023018
+v_cmpx_eq_i32  s[30:31], s0, s24, v24                     ; D124001E 00023018
+
+
+s_andn2_b64   s[28:29], s[28:29], s[30:31]                ; 8A9C1E1C
+
+
+; LINE ALTERED
+; v_cmpx_lt_u32  s[30:31], m0, 40                         ; D1A2001E 0001507C
+v_cmpx_lt_u32  s[30:31], s0, m0, 40                       ; D1A2001E 0001507C
+
+
+v_movreld_b32  v26, v2                                    ; 7E348502
+s_mov_b64     exec, s[28:29]                              ; BEFE041C
+s_cbranch_execnz  label_006E                              ; BF89FFF5
+label_0079:
+s_mov_b64     exec, s[26:27]                              ; BEFE041A
+v_mov_b32     v3, v27                                     ; 7E06031B
+v_mov_b32     v5, v28                                     ; 7E0A031C
+v_mov_b32     v6, v29                                     ; 7E0C031D
+v_mov_b32     v7, v30                                     ; 7E0E031E
+v_mov_b32     v8, v31                                     ; 7E10031F
+v_mov_b32     v9, v32                                     ; 7E120320
+v_mov_b32     v10, v33                                    ; 7E140321
+v_mov_b32     v11, v34                                    ; 7E160322
+v_mov_b32     v12, v35                                    ; 7E180323
+v_mov_b32     v13, v36                                    ; 7E1A0324
+v_mov_b32     v14, v37                                    ; 7E1C0325
+v_mov_b32     v15, v38                                    ; 7E1E0326
+v_mov_b32     v16, v39                                    ; 7E200327
+v_mov_b32     v17, v41                                    ; 7E220329
+v_add_i32     v18, vcc, -1, v26                           ; 4A2434C1
+v_alignbit_b32  v18, v18, v18, 29                         ; D29C0012 02762512
+v_mov_b32     v19, 0x98badcfe                             ; 7E2602FF 98BADCFE
+s_waitcnt     lgkmcnt(0)                                  ; BF8C007F
+s_mov_b32     s0, 0xefcdab89                              ; BE8003FF EFCDAB89
+v_bfi_b32     v19, v18, s0, v19                           ; D2940013 044C0112
+v_add_i32     v19, vcc, v19, v3                           ; 4A260713
+v_add_i32     v19, vcc, 0x10325476, v19                   ; 4A2626FF 10325476
+v_alignbit_b32  v19, v19, v19, 25                         ; D29C0013 02662713
+v_bfi_b32     v20, v19, v18, s0                           ; D2940014 00022513
+v_add_i32     v20, vcc, v20, v5                           ; 4A280B14
+v_add_i32     v20, vcc, 0x98badcfe, v20                   ; 4A2828FF 98BADCFE
+v_alignbit_b32  v20, v20, v20, 21                         ; D29C0014 02562914
+v_bfi_b32     v21, v20, v19, v18                          ; D2940015 044A2714
+v_add_i32     v21, vcc, v21, v6                           ; 4A2A0D15
+v_add_i32     v21, vcc, 0xefcdab89, v21                   ; 4A2A2AFF EFCDAB89
+v_alignbit_b32  v21, v21, v21, 13                         ; D29C0015 02362B15
+v_bfi_b32     v22, v21, v20, v19                          ; D2940016 044E2915
+v_add_i32     v18, vcc, v18, v22                          ; 4A242D12
+v_add_i32     v18, vcc, v18, v7                           ; 4A240F12
+v_alignbit_b32  v18, v18, v18, 29                         ; D29C0012 02762512
+v_bfi_b32     v22, v18, v21, v20                          ; D2940016 04522B12
+v_add_i32     v19, vcc, v19, v22                          ; 4A262D13
+v_add_i32     v19, vcc, v19, v8                           ; 4A261113
+v_alignbit_b32  v19, v19, v19, 25                         ; D29C0013 02662713
+v_bfi_b32     v22, v19, v18, v21                          ; D2940016 04562513
+v_add_i32     v20, vcc, v20, v22                          ; 4A282D14
+v_add_i32     v20, vcc, v20, v9                           ; 4A281314
+v_alignbit_b32  v20, v20, v20, 21                         ; D29C0014 02562914
+v_bfi_b32     v22, v20, v19, v18                          ; D2940016 044A2714
+v_add_i32     v21, vcc, v21, v22                          ; 4A2A2D15
+v_add_i32     v21, vcc, v21, v10                          ; 4A2A1515
+v_alignbit_b32  v21, v21, v21, 13                         ; D29C0015 02362B15
+v_bfi_b32     v22, v21, v20, v19                          ; D2940016 044E2915
+v_add_i32     v18, vcc, v18, v22                          ; 4A242D12
+v_add_i32     v18, vcc, v18, v11                          ; 4A241712
+v_alignbit_b32  v18, v18, v18, 29                         ; D29C0012 02762512
+v_bfi_b32     v22, v18, v21, v20                          ; D2940016 04522B12
+v_add_i32     v19, vcc, v19, v22                          ; 4A262D13
+v_add_i32     v19, vcc, v19, v12                          ; 4A261913
+v_alignbit_b32  v19, v19, v19, 25                         ; D29C0013 02662713
+v_bfi_b32     v22, v19, v18, v21                          ; D2940016 04562513
+v_add_i32     v20, vcc, v20, v22                          ; 4A282D14
+v_add_i32     v20, vcc, v20, v13                          ; 4A281B14
+v_alignbit_b32  v20, v20, v20, 21                         ; D29C0014 02562914
+v_bfi_b32     v22, v20, v19, v18                          ; D2940016 044A2714
+v_add_i32     v21, vcc, v21, v22                          ; 4A2A2D15
+v_add_i32     v21, vcc, v21, v14                          ; 4A2A1D15
+v_alignbit_b32  v21, v21, v21, 13                         ; D29C0015 02362B15
+v_bfi_b32     v22, v21, v20, v19                          ; D2940016 044E2915
+v_add_i32     v18, vcc, v18, v22                          ; 4A242D12
+v_add_i32     v18, vcc, v18, v15                          ; 4A241F12
+v_alignbit_b32  v18, v18, v18, 29                         ; D29C0012 02762512
+v_bfi_b32     v22, v18, v21, v20                          ; D2940016 04522B12
+v_add_i32     v19, vcc, v19, v22                          ; 4A262D13
+v_add_i32     v19, vcc, v19, v16                          ; 4A262113
+v_alignbit_b32  v19, v19, v19, 25                         ; D29C0013 02662713
+v_bfi_b32     v22, v19, v18, v21                          ; D2940016 04562513
+v_lshlrev_b32  v4, 3, v4                                  ; 34080883
+v_add_i32     v20, vcc, v20, v22                          ; 4A282D14
+v_add_i32     v20, vcc, v4, v20                           ; 4A282904
+v_alignbit_b32  v20, v20, v20, 21                         ; D29C0014 02562914
+v_bfi_b32     v22, v20, v19, v18                          ; D2940016 044A2714
+v_add_i32     v21, vcc, v21, v22                          ; 4A2A2D15
+v_add_i32     v21, vcc, v21, v17                          ; 4A2A2315
+v_alignbit_b32  v21, v21, v21, 13                         ; D29C0015 02362B15
+v_or_b32      v22, v19, v20                               ; 382C2913
+v_and_b32     v22, v21, v22                               ; 362C2D15
+v_and_b32     v23, v19, v20                               ; 362E2913
+v_or_b32      v22, v22, v23                               ; 382C2F16
+v_add_i32     v18, vcc, v26, v18                          ; 4A24251A
+v_add_i32     v18, vcc, v22, v18                          ; 4A242516
+v_add_i32     v18, vcc, 0x5a827999, v18                   ; 4A2424FF 5A827999
+v_or_b32      v22, v20, v21                               ; 382C2B14
+v_alignbit_b32  v18, v18, v18, 29                         ; D29C0012 02762512
+v_and_b32     v22, v22, v18                               ; 362C2516
+v_and_b32     v23, v20, v21                               ; 362E2B14
+v_or_b32      v22, v22, v23                               ; 382C2F16
+v_add_i32     v19, vcc, v7, v19                           ; 4A262707
+v_add_i32     v19, vcc, v22, v19                          ; 4A262716
+v_add_i32     v19, vcc, 0x5a827999, v19                   ; 4A2626FF 5A827999
+v_alignbit_b32  v19, v19, v19, 27                         ; D29C0013 026E2713
+v_or_b32      v22, v21, v18                               ; 382C2515
+v_and_b32     v22, v19, v22                               ; 362C2D13
+v_and_b32     v23, v21, v18                               ; 362E2515
+v_or_b32      v22, v22, v23                               ; 382C2F16
+v_add_i32     v20, vcc, v11, v20                          ; 4A28290B
+v_add_i32     v20, vcc, v22, v20                          ; 4A282916
+v_add_i32     v20, vcc, 0x5a827999, v20                   ; 4A2828FF 5A827999
+v_alignbit_b32  v20, v20, v20, 23                         ; D29C0014 025E2914
+v_or_b32      v22, v18, v19                               ; 382C2712
+v_and_b32     v22, v20, v22                               ; 362C2D14
+v_and_b32     v23, v18, v19                               ; 362E2712
+v_or_b32      v22, v22, v23                               ; 382C2F16
+v_add_i32     v21, vcc, v15, v21                          ; 4A2A2B0F
+v_add_i32     v21, vcc, v22, v21                          ; 4A2A2B16
+v_add_i32     v21, vcc, 0x5a827999, v21                   ; 4A2A2AFF 5A827999
+v_or_b32      v22, v19, v20                               ; 382C2913
+v_alignbit_b32  v21, v21, v21, 19                         ; D29C0015 024E2B15
+v_and_b32     v22, v22, v21                               ; 362C2B16
+v_and_b32     v23, v19, v20                               ; 362E2913
+v_or_b32      v22, v22, v23                               ; 382C2F16
+v_add_i32     v18, vcc, v3, v18                           ; 4A242503
+v_add_i32     v18, vcc, v22, v18                          ; 4A242516
+v_add_i32     v18, vcc, 0x5a827999, v18                   ; 4A2424FF 5A827999
+v_alignbit_b32  v18, v18, v18, 29                         ; D29C0012 02762512
+v_or_b32      v22, v20, v21                               ; 382C2B14
+v_and_b32     v22, v18, v22                               ; 362C2D12
+v_and_b32     v23, v20, v21                               ; 362E2B14
+v_or_b32      v22, v22, v23                               ; 382C2F16
+v_add_i32     v19, vcc, v8, v19                           ; 4A262708
+v_add_i32     v19, vcc, v22, v19                          ; 4A262716
+v_add_i32     v19, vcc, 0x5a827999, v19                   ; 4A2626FF 5A827999
+v_alignbit_b32  v19, v19, v19, 27                         ; D29C0013 026E2713
+v_or_b32      v22, v21, v18                               ; 382C2515
+v_and_b32     v22, v19, v22                               ; 362C2D13
+v_and_b32     v23, v21, v18                               ; 362E2515
+v_or_b32      v22, v22, v23                               ; 382C2F16
+v_add_i32     v20, vcc, v12, v20                          ; 4A28290C
+v_add_i32     v20, vcc, v22, v20                          ; 4A282916
+v_add_i32     v20, vcc, 0x5a827999, v20                   ; 4A2828FF 5A827999
+v_or_b32      v22, v18, v19                               ; 382C2712
+v_alignbit_b32  v20, v20, v20, 23                         ; D29C0014 025E2914
+v_and_b32     v22, v22, v20                               ; 362C2916
+v_and_b32     v23, v18, v19                               ; 362E2712
+v_or_b32      v22, v22, v23                               ; 382C2F16
+v_add_i32     v21, vcc, v16, v21                          ; 4A2A2B10
+v_add_i32     v21, vcc, v22, v21                          ; 4A2A2B16
+v_add_i32     v21, vcc, 0x5a827999, v21                   ; 4A2A2AFF 5A827999
+v_alignbit_b32  v21, v21, v21, 19                         ; D29C0015 024E2B15
+v_or_b32      v22, v19, v20                               ; 382C2913
+v_and_b32     v22, v21, v22                               ; 362C2D15
+v_and_b32     v23, v19, v20                               ; 362E2913
+v_or_b32      v22, v22, v23                               ; 382C2F16
+v_add_i32     v18, vcc, v5, v18                           ; 4A242505
+v_add_i32     v18, vcc, v22, v18                          ; 4A242516
+v_add_i32     v18, vcc, 0x5a827999, v18                   ; 4A2424FF 5A827999
+v_alignbit_b32  v18, v18, v18, 29                         ; D29C0012 02762512
+v_or_b32      v22, v20, v21                               ; 382C2B14
+v_and_b32     v22, v18, v22                               ; 362C2D12
+v_and_b32     v23, v20, v21                               ; 362E2B14
+v_or_b32      v22, v22, v23                               ; 382C2F16
+v_add_i32     v19, vcc, v9, v19                           ; 4A262709
+v_add_i32     v19, vcc, v22, v19                          ; 4A262716
+v_add_i32     v19, vcc, 0x5a827999, v19                   ; 4A2626FF 5A827999
+v_or_b32      v22, v21, v18                               ; 382C2515
+v_alignbit_b32  v19, v19, v19, 27                         ; D29C0013 026E2713
+v_and_b32     v22, v22, v19                               ; 362C2716
+v_and_b32     v23, v21, v18                               ; 362E2515
+v_or_b32      v22, v22, v23                               ; 382C2F16
+v_add_i32     v20, vcc, v13, v20                          ; 4A28290D
+v_add_i32     v20, vcc, v22, v20                          ; 4A282916
+v_add_i32     v20, vcc, 0x5a827999, v20                   ; 4A2828FF 5A827999
+v_alignbit_b32  v20, v20, v20, 23                         ; D29C0014 025E2914
+v_or_b32      v22, v18, v19                               ; 382C2712
+v_and_b32     v22, v20, v22                               ; 362C2D14
+v_and_b32     v23, v18, v19                               ; 362E2712
+v_or_b32      v22, v22, v23                               ; 382C2F16
+v_add_i32     v21, vcc, v4, v21                           ; 4A2A2B04
+v_add_i32     v21, vcc, v22, v21                          ; 4A2A2B16
+v_add_i32     v21, vcc, 0x5a827999, v21                   ; 4A2A2AFF 5A827999
+v_alignbit_b32  v21, v21, v21, 19                         ; D29C0015 024E2B15
+v_or_b32      v22, v19, v20                               ; 382C2913
+v_and_b32     v22, v21, v22                               ; 362C2D15
+v_and_b32     v23, v19, v20                               ; 362E2913
+v_or_b32      v22, v22, v23                               ; 382C2F16
+v_add_i32     v18, vcc, v6, v18                           ; 4A242506
+v_add_i32     v18, vcc, v22, v18                          ; 4A242516
+v_add_i32     v18, vcc, 0x5a827999, v18                   ; 4A2424FF 5A827999
+v_or_b32      v22, v20, v21                               ; 382C2B14
+v_alignbit_b32  v18, v18, v18, 29                         ; D29C0012 02762512
+v_and_b32     v22, v22, v18                               ; 362C2516
+v_and_b32     v23, v20, v21                               ; 362E2B14
+v_or_b32      v22, v22, v23                               ; 382C2F16
+v_add_i32     v19, vcc, v10, v19                          ; 4A26270A
+v_add_i32     v19, vcc, v22, v19                          ; 4A262716
+v_add_i32     v19, vcc, 0x5a827999, v19                   ; 4A2626FF 5A827999
+v_alignbit_b32  v19, v19, v19, 27                         ; D29C0013 026E2713
+v_or_b32      v22, v21, v18                               ; 382C2515
+v_and_b32     v22, v19, v22                               ; 362C2D13
+v_and_b32     v23, v21, v18                               ; 362E2515
+v_or_b32      v22, v22, v23                               ; 382C2F16
+v_add_i32     v20, vcc, v14, v20                          ; 4A28290E
+v_add_i32     v20, vcc, v22, v20                          ; 4A282916
+v_add_i32     v20, vcc, 0x5a827999, v20                   ; 4A2828FF 5A827999
+v_alignbit_b32  v20, v20, v20, 23                         ; D29C0014 025E2914
+v_or_b32      v22, v18, v19                               ; 382C2712
+v_and_b32     v22, v20, v22                               ; 362C2D14
+v_and_b32     v23, v18, v19                               ; 362E2712
+v_or_b32      v22, v22, v23                               ; 382C2F16
+v_add_i32     v21, vcc, v17, v21                          ; 4A2A2B11
+v_add_i32     v21, vcc, v22, v21                          ; 4A2A2B16
+v_add_i32     v21, vcc, 0x5a827999, v21                   ; 4A2A2AFF 5A827999
+v_xor_b32     v22, v19, v20                               ; 3A2C2913
+v_alignbit_b32  v21, v21, v21, 19                         ; D29C0015 024E2B15
+v_xor_b32     v22, v22, v21                               ; 3A2C2B16
+v_add_i32     v2, vcc, v26, v18                           ; 4A04251A
+v_add_i32     v2, vcc, v22, v2                            ; 4A040516
+v_add_i32     v2, vcc, 0x6ed9eba1, v2                     ; 4A0404FF 6ED9EBA1
+v_alignbit_b32  v2, v2, v2, 29                            ; D29C0002 02760502
+v_xor_b32     v18, v20, v21                               ; 3A242B14
+v_xor_b32     v18, v2, v18                                ; 3A242502
+v_add_i32     v11, vcc, v11, v19                          ; 4A16270B
+v_add_i32     v11, vcc, v18, v11                          ; 4A161712
+v_add_i32     v11, vcc, 0x6ed9eba1, v11                   ; 4A1616FF 6ED9EBA1
+v_alignbit_b32  v11, v11, v11, 23                         ; D29C000B 025E170B
+v_xor_b32     v18, v21, v2                                ; 3A240515
+v_xor_b32     v18, v11, v18                               ; 3A24250B
+v_add_i32     v7, vcc, v7, v20                            ; 4A0E2907
+v_add_i32     v7, vcc, v18, v7                            ; 4A0E0F12
+v_add_i32     v7, vcc, 0x6ed9eba1, v7                     ; 4A0E0EFF 6ED9EBA1
+v_xor_b32     v18, v2, v11                                ; 3A241702
+v_alignbit_b32  v7, v7, v7, 21                            ; D29C0007 02560F07
+v_xor_b32     v18, v18, v7                                ; 3A240F12
+v_add_i32     v15, vcc, v15, v21                          ; 4A1E2B0F
+v_add_i32     v15, vcc, v18, v15                          ; 4A1E1F12
+v_add_i32     v15, vcc, 0x6ed9eba1, v15                   ; 4A1E1EFF 6ED9EBA1
+v_alignbit_b32  v15, v15, v15, 17                         ; D29C000F 02461F0F
+v_xor_b32     v18, v11, v7                                ; 3A240F0B
+v_xor_b32     v18, v15, v18                               ; 3A24250F
+v_add_i32     v2, vcc, v5, v2                             ; 4A040505
+v_add_i32     v2, vcc, v18, v2                            ; 4A040512
+v_add_i32     v2, vcc, 0x6ed9eba1, v2                     ; 4A0404FF 6ED9EBA1
+v_alignbit_b32  v2, v2, v2, 29                            ; D29C0002 02760502
+v_xor_b32     v5, v7, v15                                 ; 3A0A1F07
+v_xor_b32     v5, v2, v5                                  ; 3A0A0B02
+v_add_i32     v11, vcc, v13, v11                          ; 4A16170D
+v_add_i32     v5, vcc, v5, v11                            ; 4A0A1705
+v_add_i32     v5, vcc, 0x6ed9eba1, v5                     ; 4A0A0AFF 6ED9EBA1
+v_xor_b32     v11, v15, v2                                ; 3A16050F
+v_alignbit_b32  v5, v5, v5, 23                            ; D29C0005 025E0B05
+v_xor_b32     v11, v11, v5                                ; 3A160B0B
+v_add_i32     v7, vcc, v9, v7                             ; 4A0E0F09
+v_add_i32     v7, vcc, v11, v7                            ; 4A0E0F0B
+v_add_i32     v7, vcc, 0x6ed9eba1, v7                     ; 4A0E0EFF 6ED9EBA1
+v_alignbit_b32  v7, v7, v7, 21                            ; D29C0007 02560F07
+v_xor_b32     v9, v2, v5                                  ; 3A120B02
+v_xor_b32     v9, v7, v9                                  ; 3A121307
+v_add_i32     v4, vcc, v4, v15                            ; 4A081F04
+v_add_i32     v4, vcc, v9, v4                             ; 4A080909
+v_add_i32     v4, vcc, 0x6ed9eba1, v4                     ; 4A0808FF 6ED9EBA1
+v_alignbit_b32  v4, v4, v4, 17                            ; D29C0004 02460904
+v_xor_b32     v9, v5, v7                                  ; 3A120F05
+v_xor_b32     v9, v4, v9                                  ; 3A121304
+v_add_i32     v2, vcc, v3, v2                             ; 4A040503
+v_add_i32     v2, vcc, v9, v2                             ; 4A040509
+v_add_i32     v2, vcc, 0x6ed9eba1, v2                     ; 4A0404FF 6ED9EBA1
+v_xor_b32     v3, v7, v4                                  ; 3A060907
+v_alignbit_b32  v2, v2, v2, 29                            ; D29C0002 02760502
+v_xor_b32     v3, v3, v2                                  ; 3A060503
+v_add_i32     v5, vcc, v12, v5                            ; 4A0A0B0C
+v_add_i32     v3, vcc, v3, v5                             ; 4A060B03
+v_add_i32     v3, vcc, 0x6ed9eba1, v3                     ; 4A0606FF 6ED9EBA1
+v_alignbit_b32  v3, v3, v3, 23                            ; D29C0003 025E0703
+v_xor_b32     v5, v4, v2                                  ; 3A0A0504
+v_xor_b32     v5, v3, v5                                  ; 3A0A0B03
+v_add_i32     v7, vcc, v8, v7                             ; 4A0E0F08
+v_add_i32     v5, vcc, v5, v7                             ; 4A0A0F05
+v_add_i32     v5, vcc, 0x6ed9eba1, v5                     ; 4A0A0AFF 6ED9EBA1
+v_alignbit_b32  v5, v5, v5, 21                            ; D29C0005 02560B05
+v_xor_b32     v7, v2, v3                                  ; 3A0E0702
+v_xor_b32     v7, v5, v7                                  ; 3A0E0F05
+v_add_i32     v4, vcc, v16, v4                            ; 4A080910
+v_add_i32     v4, vcc, v7, v4                             ; 4A080907
+v_add_i32     v4, vcc, 0x6ed9eba1, v4                     ; 4A0808FF 6ED9EBA1
+v_xor_b32     v7, v3, v5                                  ; 3A0E0B03
+v_alignbit_b32  v4, v4, v4, 17                            ; D29C0004 02460904
+v_xor_b32     v7, v7, v4                                  ; 3A0E0907
+v_add_i32     v2, vcc, v6, v2                             ; 4A040506
+v_add_i32     v2, vcc, v7, v2                             ; 4A040507
+v_add_i32     v2, vcc, 0x6ed9eba1, v2                     ; 4A0404FF 6ED9EBA1
+v_alignbit_b32  v2, v2, v2, 29                            ; D29C0002 02760502
+v_xor_b32     v6, v5, v4                                  ; 3A0C0905
+v_xor_b32     v6, v2, v6                                  ; 3A0C0D02
+v_add_i32     v3, vcc, v14, v3                            ; 4A06070E
+v_add_i32     v3, vcc, v6, v3                             ; 4A060706
+v_add_i32     v3, vcc, 0x6ed9eba1, v3                     ; 4A0606FF 6ED9EBA1
+v_alignbit_b32  v3, v3, v3, 23                            ; D29C0003 025E0703
+v_xor_b32     v6, v4, v2                                  ; 3A0C0504
+v_xor_b32     v6, v3, v6                                  ; 3A0C0D03
+v_add_i32     v5, vcc, v10, v5                            ; 4A0A0B0A
+v_add_i32     v5, vcc, v6, v5                             ; 4A0A0B06
+v_add_i32     v5, vcc, 0x6ed9eba1, v5                     ; 4A0A0AFF 6ED9EBA1
+s_load_dwordx4  s[8:11], s[2:3], 0x50                     ; C0840350
+v_xor_b32     v6, v2, v3                                  ; 3A0C0702
+v_alignbit_b32  v5, v5, v5, 21                            ; D29C0005 02560B05
+v_xor_b32     v6, v6, v5                                  ; 3A0C0B06
+v_add_i32     v4, vcc, v17, v4                            ; 4A080911
+v_add_i32     v4, vcc, v6, v4                             ; 4A080906
+v_add_i32     v4, vcc, 0x6ed9eba1, v4                     ; 4A0808FF 6ED9EBA1
+v_add_i32     v6, vcc, s4, v0                             ; 4A0C0004
+s_lshl_b32    s0, s4, 1                                   ; 8F008104
+v_alignbit_b32  v4, v4, v4, 17                            ; D29C0004 02460904
+v_add_i32     v2, vcc, 0x67452301, v2                     ; 4A0404FF 67452301
+v_add_i32     v1, vcc, s1, v1                             ; 4A020201
+v_lshlrev_b32  v6, 2, v6                                  ; 340C0C82
+v_add_i32     v7, vcc, s0, v0                             ; 4A0E0000
+s_mul_i32     s0, s4, 3                                   ; 93008304
+s_waitcnt     lgkmcnt(0)                                  ; BF8C007F
+tbuffer_store_format_x  v2, v1, s[8:11], 0 offen format:[BUF_DATA_FORMAT_32,BUF_NUM_FORMAT_FLOAT] ; EBA41000 80020201
+v_add_i32     v1, vcc, 0xefcdab89, v4                     ; 4A0208FF EFCDAB89
+s_waitcnt     expcnt(0)                                   ; BF8C1F0F
+v_add_i32     v2, vcc, s1, v6                             ; 4A040C01
+v_lshlrev_b32  v4, 2, v7                                  ; 34080E82
+v_add_i32     v0, vcc, s0, v0                             ; 4A000000
+tbuffer_store_format_x  v1, v2, s[8:11], 0 offen format:[BUF_DATA_FORMAT_32,BUF_NUM_FORMAT_FLOAT] ; EBA41000 80020102
+s_waitcnt     expcnt(0)                                   ; BF8C1F0F
+v_add_i32     v1, vcc, 0x98badcfe, v5                     ; 4A020AFF 98BADCFE
+v_add_i32     v2, vcc, s1, v4                             ; 4A040801
+v_lshlrev_b32  v0, 2, v0                                  ; 34000082
+tbuffer_store_format_x  v1, v2, s[8:11], 0 offen format:[BUF_DATA_FORMAT_32,BUF_NUM_FORMAT_FLOAT] ; EBA41000 80020102
+s_waitcnt     expcnt(0)                                   ; BF8C1F0F
+v_add_i32     v1, vcc, 0x10325476, v3                     ; 4A0206FF 10325476
+v_add_i32     v0, vcc, s1, v0                             ; 4A000001
+tbuffer_store_format_x  v1, v0, s[8:11], 0 offen format:[BUF_DATA_FORMAT_32,BUF_NUM_FORMAT_FLOAT] ; EBA41000 80020100
+
+
+; LINE ALTERED
+; s_endpgm                                                ; BF810000
+s_endpgm      0                                           ; BF810000

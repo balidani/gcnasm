@@ -83,34 +83,6 @@ static isa_op_code* parseAlternate(isa_instr instr, int argc, char **args)
 }
 
 /**
- * Parses a line or operand using strsep
- * and a list of delimiters.
- *
- * Removes any trailing new-line
- */
-char* parseField(char **line, const char delimiter[])
-{
-	char *field;
-
-	while (1)
-	{
-		field = strsep(line, delimiter);
-		
-		if (field == NULL)
-			return field;
-
-		if (strlen(field) > 0)
-			break;
-	}
-
-	// Strip trailing new-line
-	if (field[strlen(field) - 1] == '\n')
-		field[strlen(field) - 1] =  '\0';
-
-	return field;
-}
-
-/**
  * Parses a whole ISA file line by line
  */
 void parseFile(const char *input, const char *output) 
@@ -118,10 +90,8 @@ void parseFile(const char *input, const char *output)
 	FILE *in_file, *out_file;
 	char line[256];
 
-	uint32_t *microcode;
-	int microcode_ptr;
 	int line_count;
-	int i;
+	unsigned int i;
 
 	// Count lines to estimate microcode size
 	line_count = 0;
@@ -135,18 +105,21 @@ void parseFile(const char *input, const char *output)
 		line_count++;
 	}
 
-	fclose(in_file);
-
 	// Allocate space for microcode
-	microcode = (uint32_t *) calloc((size_t) line_count * 2, 
+	microcode.code = (uint32_t *) calloc((size_t) line_count * 2, 
 		sizeof (uint32_t));
-	microcode_ptr = 0;
+	microcode.ptr = 0;
+
+	// Pre-parse and find labels
+	rewind(in_file);
+
+	while (fgets(line, sizeof(line), in_file))
+	{
+		parseLabel(line);
+	}
 
 	// Parse each line
-	in_file = fopen(input, "r");
-
-	if (in_file == NULL)
-		ERROR("opening file \"%s\"", input);
+	rewind(in_file);
 
 	while (fgets(line, sizeof(line), in_file))
 	{
@@ -158,22 +131,20 @@ void parseFile(const char *input, const char *output)
 		if (result == NULL)
 			continue;
 
-		// printf("[%d] %08x", line_number-1, result->code);
-
-		microcode[microcode_ptr++] = result->code;
+		microcode.code[microcode.ptr++] = result->code;
 
 		if (result->literal_set)
 		{
-			microcode[microcode_ptr++] = result->literal;
-			// printf(" %08x", result->literal);
+			microcode.code[microcode.ptr++] = result->literal;
 		}
-
-		// printf("\n");
 
 		free(result);
 	}
 
 	fclose(in_file);
+
+	// Post process label occurrences
+	processOccurrence();
 
 	// Write results to output
 	out_file = fopen(output, "w");
@@ -181,9 +152,9 @@ void parseFile(const char *input, const char *output)
 	if (out_file == NULL)
 		ERROR("opening file \"%s\"", output);
 
-	for (i = 0; i < microcode_ptr; ++i)
+	for (i = 0; i < microcode.ptr; ++i)
 	{
-		uint32_t src = microcode[i];
+		uint32_t src = microcode.code[i];
 
 		if (fwrite(&src, sizeof(uint32_t), 1, out_file) == 0)
 			ERROR("writing file \"%s\"", output);
@@ -191,7 +162,7 @@ void parseFile(const char *input, const char *output)
 
 	fclose(out_file);
 
-	free(microcode);
+	free(microcode.code);
 }
 
 /**
@@ -208,7 +179,7 @@ isa_op_code* parseLine(char *line)
 	char **args;
 	int argc;
 	int max_op_count;
-	int i, j;
+	unsigned int i, j;
 
 	// Special case for commented lines
 	if (line[0] == comment_delimiter[0])
@@ -232,8 +203,27 @@ isa_op_code* parseLine(char *line)
 		if (strcmp(isa_instr_list[i].name, token) == 0)
 			break;
 
+	// If the instruction is not recognized, try to parse a label
 	if (i == isa_instr_count)
-		ERROR("unrecognized instruction '%s'", token);
+	{
+		for (i = 0; i < label_count; ++i)
+			if (strncmp(label_list[i].name, token, 
+					strlen(label_list[i].name)) == 0)
+				break;
+
+		if (i == label_count)
+		{
+			WARNING("unrecognized instruciton '%s'", token);
+		}
+		else
+		{
+			// Add the microcode pointer here, since it isn't known 
+			// when pre-parsing happens
+			label_list[i].instr_ptr = microcode.ptr;
+		}
+
+		return NULL;
+	}
 
 	max_op_count = -1;
 
@@ -244,11 +234,8 @@ isa_op_code* parseLine(char *line)
 			if (isa_format_list[j].max_op_count > max_op_count)
 				max_op_count = isa_format_list[j].max_op_count;
 
-	// If the instruction is not recognised, try to parse a label
 	if (max_op_count < 0)
-	{
-		ERROR("todo");
-	}
+		ERROR("unrecognized format for the instruction '%s'", token);
 
 	// Allocate space for maximum number of operand pointers
 	args = (char **) calloc((size_t) max_op_count, sizeof(char *));
@@ -297,4 +284,32 @@ isa_op_code* parseLine(char *line)
 	free(args);
 
 	return result;
+}
+
+/**
+ * Parses a line or operand using strsep
+ * and a list of delimiters.
+ *
+ * Removes any trailing new-line
+ */
+char* parseField(char **line, const char delimiter[])
+{
+	char *field;
+
+	while (1)
+	{
+		field = strsep(line, delimiter);
+		
+		if (field == NULL)
+			return field;
+
+		if (strlen(field) > 0)
+			break;
+	}
+
+	// Strip trailing new-line
+	if (field[strlen(field) - 1] == '\n')
+		field[strlen(field) - 1] =  '\0';
+
+	return field;
 }
