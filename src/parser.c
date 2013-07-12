@@ -20,6 +20,68 @@
 static const char field_delimiter[] = ", \t";
 static const char comment_delimiter[] = ";\n";
 
+static format_parser format_parser_list[] = 
+{
+	{NONE,		NULL},
+	{SOP1,		&parseSOP1},
+	{SOP2,		&parseSOP2},
+	{SOPK,		&parseSOPK},
+	{SOPC,		&parseSOPC},
+	{SOPP,		&parseSOPP},
+	{SMRD,		&parseSMRD},
+	{VOP1,		&parseVOP1},
+	{VOP2,		&parseVOP2},
+	{VOP3a,		&parseVOP3a},
+	{VOP3b,		&parseVOP3b},
+	{VOPC,		&parseVOPC},
+	{VINTRP,	NULL},
+	{DS,		&parseDS},
+	{EXP,		NULL},
+	{MUBUF,		&parseMUBUF},
+	{MTBUF,		&parseMTBUF},
+	{MIMG,		&parseMIMG}
+};
+
+/**
+ * Finds the alternative parser function for an instruction
+ */
+static int findParser(isa_instr_enc enc)
+{
+	int length, i;
+
+	length = sizeof(format_parser_list) / sizeof(format_parser);
+	for (i = 0; i < length; ++i)
+		if (format_parser_list[i].encoding == enc)
+			break;
+
+	if (i == length)
+		return -1;
+
+	return i;
+}
+
+/**
+ * Executes the alternative parser function for an instruction
+ */
+static isa_op_code* parseAlternate(isa_instr instr, int argc, char **args)
+{
+	isa_instr instr_copy;
+	isa_op_code* result;
+	int fun_id = findParser(instr.alt_encoding);
+
+	// Replace op code before the parsing happens
+	memcpy(&instr_copy, &instr, sizeof(isa_instr));
+	instr_copy.op_code = instr_copy.alt_op_code;
+
+	if (fun_id >= 0)
+		result = format_parser_list[fun_id].parser(
+			instr_copy, argc, args);
+	else
+		ERROR("wrong number of arguments for alternative format");
+
+	return result;
+}
+
 /**
  * Parses a line or operand using strsep
  * and a list of delimiters.
@@ -96,15 +158,17 @@ void parseFile(const char *input, const char *output)
 		if (result == NULL)
 			continue;
 
-		// printf("%08x\n", result->code);
+		// printf("[%d] %08x", line_number-1, result->code);
 
 		microcode[microcode_ptr++] = result->code;
 
 		if (result->literal_set)
 		{
 			microcode[microcode_ptr++] = result->literal;
-			// printf("%08x\n", result->literal);
+			// printf(" %08x", result->literal);
 		}
+
+		// printf("\n");
 
 		free(result);
 	}
@@ -146,7 +210,6 @@ isa_op_code* parseLine(char *line)
 	int max_op_count;
 	int i, j;
 
-
 	// Special case for commented lines
 	if (line[0] == comment_delimiter[0])
 		return NULL;
@@ -172,15 +235,20 @@ isa_op_code* parseLine(char *line)
 	if (i == isa_instr_count)
 		ERROR("unrecognized instruction '%s'", token);
 
-	// Find encoding format
+	max_op_count = -1;
+
+	// Find (max) encoding format
 	for (j = 0; j < isa_format_count; ++j)
-		if (isa_instr_list[i].encoding == isa_format_list[j].encoding)
-			break;
+		if (isa_instr_list[i].encoding == isa_format_list[j].encoding
+			|| isa_instr_list[i].alt_encoding == isa_format_list[j].encoding)
+			if (isa_format_list[j].max_op_count > max_op_count)
+				max_op_count = isa_format_list[j].max_op_count;
 
-	if (j == isa_format_count)
-		ERROR("unrecognized format for the instruction '%s'", token);
-
-	max_op_count = isa_format_list[j].max_op_count;
+	// If the instruction is not recognised, try to parse a label
+	if (max_op_count < 0)
+	{
+		ERROR("todo");
+	}
 
 	// Allocate space for maximum number of operand pointers
 	args = (char **) calloc((size_t) max_op_count, sizeof(char *));
@@ -218,13 +286,16 @@ isa_op_code* parseLine(char *line)
 			result = parseSMRD(isa_instr_list[i], argc, args);
 			break;
 		case VOP2:
+			// VOP3a/b support still needed
 			result = parseVOP2(isa_instr_list[i], argc, args);
 			break;
 		case VOP1:
+			// VOP3a support (is it needed here?)
 			result = parseVOP1(isa_instr_list[i], argc, args);
 			break;
 		case VOPC:
-			result = parseVOPC(isa_instr_list[i], argc, args);
+			// result = parseVOPC(isa_instr_list[i], argc, args);
+			result = parseAlternate(isa_instr_list[i], argc, args);
 			break;
 		case VOP3a:
 			result = parseVOP3a(isa_instr_list[i], argc, args);

@@ -35,6 +35,11 @@
 #include "mtbuf.h"
 #include "mimg.h"
 
+typedef struct {
+	isa_instr_enc encoding;
+	isa_op_code* (* parser)();
+} format_parser;
+
 void parseFile(const char *input, const char *output);
 isa_op_code* parseLine(char *line);
 char* parseField(char **line, const char delimiter[]);

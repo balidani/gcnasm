@@ -16,7 +16,7 @@
 
 typedef enum 
 {
-	XOP,
+	NONE,
 	SOP1, 
 	SOP2, 
 	SOPK, 
@@ -33,14 +33,21 @@ typedef enum
 	EXP, 
 	MUBUF, 
 	MTBUF, 
-	MIMG 
+	MIMG
 } isa_instr_enc;
 
 typedef struct 
 {
-	const char *name;		// Name of the instruction
-	uint32_t op_code;		// 32 bit opcode value
-	isa_instr_enc encoding;	// Opcode encoding type
+	// Name of the instruction
+	const char *name;
+	// 32 bit opcode value
+	uint32_t op_code;
+	// Opcode encoding type
+	isa_instr_enc encoding;
+	// Alternate encoding type
+	isa_instr_enc alt_encoding;
+	// Alternate opcode
+	uint32_t alt_op_code;
 } isa_instr;
 
 extern const isa_instr isa_instr_list[];
