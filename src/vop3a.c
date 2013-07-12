@@ -170,8 +170,9 @@ isa_op_code* parseVOP3a(isa_instr instr, int argc, char **args)
 	}
 	else
 	{
-		src2_str = (char *) calloc(2, sizeof(char));
-		strncpy(src2_str, "0", 1);
+		src2_str = (char *) calloc(strlen("s0") + 1, sizeof(char));
+		strncpy(src2_str, "s0", 2);
+
 		src2_op = parseOperand(src2_str);
 		free(src2_str);
 	}

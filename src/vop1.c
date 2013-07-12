@@ -40,8 +40,10 @@ isa_op_code* parseVOP1(isa_instr instr, int argc, char **args)
 	// VDST
 	vdst_op = parseOperand(vdst_str);
 
-	if (vdst_op->op_type.type != VGPR)
-		ERROR("VDST must be of VGPR type");
+	// No VGPR check due to an issue with v_readifirstlane_b32
+
+	//if (vdst_op->op_type.type != VGPR)
+	//	ERROR("VDST must be of VGPR type");
 
 	op_code->code |= vdst_op->op_code << 17;
 

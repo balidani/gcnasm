@@ -64,7 +64,7 @@ isa_op_code* parseVOP3b(isa_instr instr, int argc, char **args)
 	isa_operand *vdst_op, *sdst_op,		// ISA operand structs
 		*src0_op, *src1_op, *src2_op; 			
 	isa_op_code *op_code;				// Generated opcode struct
-	
+
 	op_code = (isa_op_code *) malloc(sizeof(isa_op_code));
 	
 	omod_value = 0;
@@ -89,9 +89,6 @@ isa_op_code* parseVOP3b(isa_instr instr, int argc, char **args)
 
 	// VDST
 	vdst_op = parseOperand(vdst_str);
-
-	if (vdst_op->op_type.type != VGPR)
-		ERROR("VDST operand must be a VGPR");
 
 	op_code->code |= vdst_op->op_code;
 
@@ -140,7 +137,7 @@ isa_op_code* parseVOP3b(isa_instr instr, int argc, char **args)
 	op_code->literal |= (src1_op->op_code << 9);
 
 	// SRC2
-	if (argc > 3)
+	if (argc > 4)
 	{
 		tag_result = preProcessOp(&src2_str);
 		if (tag_result & 0x01)
@@ -150,8 +147,9 @@ isa_op_code* parseVOP3b(isa_instr instr, int argc, char **args)
 	}
 	else
 	{
-		src2_str = (char *) calloc(2, sizeof(char));
-		strncpy(src2_str, "0", 1);
+		src2_str = (char *) calloc(strlen("s0") + 1, sizeof(char));
+		strncpy(src2_str, "s0", 2);
+
 		src2_op = parseOperand(src2_str);
 		free(src2_str);
 	}
