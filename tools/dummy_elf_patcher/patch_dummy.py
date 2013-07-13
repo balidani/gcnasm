@@ -27,7 +27,7 @@ def main():
             # Find the first GCN ISA instruction in the binary
             # Note: if there is a matching byte sequence earlier, 
             # this would cause an error
-            offset = data.index('\x00\x03\x88\xc0')
+            offset = data.index('\x00\x00\x80\xbf')
             
             # Substitute data
             data_l = list(data)
