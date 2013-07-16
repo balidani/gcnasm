@@ -70,10 +70,11 @@ isa_operand* parseOperand(char *op_str)
 {
 	isa_operand *result;
 	char *end;
-	unsigned int i;
+	unsigned int i, j;
 
 	const char *range_delimiter = ":]";
-	char **op_alias, *alias_copy;
+	char **op_alias, *alias_copy, *searched_op;
+	int alias_found;
 
 	result = (isa_operand *) malloc(sizeof(isa_operand));
 
@@ -85,18 +86,35 @@ isa_operand* parseOperand(char *op_str)
 	op_alias = &op_str;
 	alias_copy = NULL;
 
-	for (i = 0; i < alias_count; ++i)
-		if (strcmp(op_str, alias_list[i].tag) == 0)
-			break;
+	// Do a recursive lookup
+	searched_op = op_str;
+	j = alias_count;
+	do
+	{
+		alias_found = 0;
+		for (i = 0; i < alias_count; ++i)
+		{
+			if (strcmp(searched_op, alias_list[i].tag) == 0)
+			{
+				alias_found = 1;
+				j = i;
+				break;
+			}
+		}
 
-	if (i < alias_count)
+		if (alias_found)
+			searched_op = alias_list[i].operand;
+	}
+	while (alias_found);
+
+	if (j < alias_count)
 	{
 		// Copy the operand part of the alias and point to it
-		alias_copy = (char *) calloc(strlen(alias_list[i].operand) + 1, 
+		alias_copy = (char *) calloc(strlen(alias_list[j].operand) + 1, 
 			sizeof(char));
 
-		strncpy(alias_copy, alias_list[i].operand, 
-			strlen(alias_list[i].operand));
+		strncpy(alias_copy, alias_list[j].operand, 
+			strlen(alias_list[j].operand));
 
 		op_alias = &alias_copy;
 	}
@@ -245,7 +263,7 @@ isa_operand* parseOperand(char *op_str)
 			}
 
 			if (*end)
-				ERROR("parsing operand (literal value)");
+				ERROR("parsing operand (literal value: '%s')", *op_alias);
 
 			if (real_value == 0)
 			{

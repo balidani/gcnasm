@@ -15,13 +15,13 @@
 #include "error.h"
 
 typedef struct {
-	const char *tag;		// passed string, e.g. "exec"
-	const char *operand;	// real operand, e.g. "EXEC_LO"
+	char *tag;		// passed string, e.g. "exec"
+	char *operand;	// real operand, e.g. "EXEC_LO"
 } alias;
 
 void initAlias();
 void clearAlias();
-void addAlias(const char *tag, const char *operand);
+void addAlias(char *tag, char *operand);
 
 extern alias *alias_list;
 extern unsigned int alias_count;

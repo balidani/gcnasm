@@ -134,9 +134,7 @@ void parseFile(const char *input, const char *output)
 		microcode.code[microcode.ptr++] = result->code;
 
 		if (result->literal_set)
-		{
 			microcode.code[microcode.ptr++] = result->literal;
-		}
 
 		free(result);
 	}
@@ -203,7 +201,18 @@ isa_op_code* parseLine(char *line)
 		if (strcmp(isa_instr_list[i].name, token) == 0)
 			break;
 
-	// If the instruction is not recognized, try to parse a label
+	// If the instruction is not recognized, try to parse a define
+	if (strncmp(token, "#DEFINE", strlen("#DEFINE")) == 0)
+	{
+		char *tag = parseField(&line_strip, field_delimiter);
+		char *operand = parseField(&line_strip, field_delimiter);
+
+		addAlias(tag, operand);
+
+		return NULL;
+	}
+
+	// If a define is not recognized, try to parse a label
 	if (i == isa_instr_count)
 	{
 		for (i = 0; i < label_count; ++i)

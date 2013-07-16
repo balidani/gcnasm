@@ -10,6 +10,8 @@
  */
 
 #include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
 
 #include "alias.h"
 
@@ -46,18 +48,43 @@ void initAlias()
  */
 void clearAlias()
 {
+	unsigned int i;
+
+	for (i = 0; i < alias_count; ++i)
+	{
+		free(alias_list[i].tag);
+		free(alias_list[i].operand);
+	}
+
 	free(alias_list);
 }
 
 /**
  * Adds a new alias to the list
  */
-void addAlias(const char *tag, const char *operand)
+void addAlias(char *tag, char *operand)
 {
+	int i;
+
 	if (alias_count == max_alias)
 		ERROR("maximum alias count reached");
 
-	alias_list[alias_count].tag = tag;
-	alias_list[alias_count].operand = operand;
+	char *tag_copy, *operand_copy;
+
+	tag_copy = (char *) calloc(strlen(tag) + 1, sizeof(char));
+	operand_copy = (char *) calloc(strlen(operand) + 1, sizeof(char));
+
+	strncpy(tag_copy, tag, strlen(tag));
+	strncpy(operand_copy, operand, strlen(operand));
+
+	// Convert alias to upper-case
+	for (i = 0; tag_copy[i]; ++i)
+		tag_copy[i] = (char) toupper(tag_copy[i]);
+
+	for (i = 0; operand_copy[i]; ++i)
+		operand_copy[i] = (char) toupper(operand_copy[i]);
+
+	alias_list[alias_count].tag = tag_copy;
+	alias_list[alias_count].operand = operand_copy;
 	alias_count++;
 }

@@ -19,6 +19,7 @@
 #include "isa_operand.h"
 #include "isa_format.h"
 #include "error.h"
+#include "alias.h"
 #include "label.h"
 
 #include "sop2.h"
