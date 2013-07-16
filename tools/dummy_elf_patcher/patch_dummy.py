@@ -24,7 +24,7 @@ def main():
             data = f1.read()
             patch = f2.read()
             
-            # Find the first NOP in the binary
+            # Find the first GCN ISA instruction in the binary
             # Note: if there is a matching byte sequence earlier, 
             # this would cause an error
             offset = data.index('\x00\x00\x80\xbf')
