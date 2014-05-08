@@ -22,61 +22,79 @@
  */
 isa_op_code* parseDS(isa_instr instr, int argc, char **args)
 {
-	char *vdst_str, *addr_str, *data0_str, *data1_str;
+	char *vdst_str = NULL, *addr_str = NULL, *data0_str = NULL, *data1_str = NULL;
 	int i, j;
 
-	isa_operand *vdst_op, *addr_op, 	// ISA operand structs
-		*data0_op, *data1_op;	
+	isa_operand *vdst_op = NULL, *addr_op = NULL, 	// ISA operand structs
+		*data0_op, *data1_op = NULL;
 	isa_op_code *op_code;				// Generated opcode struct
 
 	
 	op_code = (isa_op_code *) malloc(sizeof(isa_op_code));
 	
-	if (argc < 4)
+	if (argc < 2)
 		ERROR("number of passed operands is too low");
 
-	// Setup arguments
-	vdst_str	= args[0];
-	addr_str	= args[1];
-	data0_str	= args[2];
-	data1_str	= args[3];
+/*	if (argc == 2) {
+	  if (!strncmp(instr.name, "DS_READ", 7)) {
+        vdst_str    = args[0];
+        addr_str    = args[1];
+	  } else {
+        addr_str    = args[0];
+        data0_str   = args[1];
+	  }
+	} else */ {
+	    // Setup arguments
+	    vdst_str    = args[0];
+	    addr_str    = args[1];
+	    data0_str   = args[2];
+	    data1_str   = args[3];
+	}
 
 	// Parse operands
 	op_code->code = instr.op_code;
 	op_code->literal = 0;
 	op_code->literal_set = 1;
 
-	// VDST
-	vdst_op = parseOperand(vdst_str);
+	if (vdst_str) {
+	  // VDST
+	  vdst_op = parseOperand(vdst_str);
 
-	if (vdst_op->op_type.type != VGPR)
-		ERROR("VDST operand must be a VGPR");
+	  if (vdst_op->op_type.type != VGPR)
+	    ERROR("VDST operand must be a VGPR");
 
-	op_code->literal |= vdst_op->op_code << 24;
+	  op_code->literal |= vdst_op->op_code << 24;
+	}
 
-	// ADDR
-	addr_op = parseOperand(addr_str);
+	if (addr_str) {
+	  // ADDR
+	  addr_op = parseOperand(addr_str);
 
-	if (addr_op->op_type.type != VGPR)
-		ERROR("ADDR operand must be a VGPR");
+	  if (addr_op->op_type.type != VGPR)
+	    ERROR("ADDR operand must be a VGPR");
 
-	op_code->literal |= addr_op->op_code;
+	  op_code->literal |= addr_op->op_code;
+	}
 
-	// DATA0
-	data0_op = parseOperand(data0_str);
+	if (data0_str) {
+	  // DATA0
+	  data0_op = parseOperand(data0_str);
 
-	if (data0_op->op_type.type != VGPR)
-		ERROR("DATA0 operand must be an VGPR");
+	  if (data0_op->op_type.type != VGPR)
+	    ERROR("DATA0 operand must be an VGPR");
 
-	op_code->literal |= data0_op->op_code << 8;
+	  op_code->literal |= data0_op->op_code << 8;
+	}
 
-	// DATA1
-	data1_op = parseOperand(data1_str);
+	if (data1_str) {
+	  // DATA1
+	  data1_op = parseOperand(data1_str);
 
-	if (data1_op->op_type.type != VGPR)
-		ERROR("DATA1 operand must be an VGPR");
+	  if (data1_op->op_type.type != VGPR)
+	    ERROR("DATA1 operand must be an VGPR");
 
-	op_code->literal |= data1_op->op_code << 16;
+	  op_code->literal |= data1_op->op_code << 16;
+	}
 
 	// Parse optional parameters
 	for (i = 4; i < argc; ++i)

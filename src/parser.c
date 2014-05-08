@@ -125,6 +125,9 @@ void parseFile(const char *input, const char *output)
 	{
 		isa_op_code *result;
 
+//		uint32_t ptr = microcode.ptr;
+//		printf("%s", line);
+
 		result = parseLine(line);
 		line_number++;
 
@@ -135,7 +138,13 @@ void parseFile(const char *input, const char *output)
 
 		if (result->literal_set)
 			microcode.code[microcode.ptr++] = result->literal;
-
+/*
+		printf("%70X ", ptr*4);
+		for (; ptr < microcode.ptr; ++ptr) {
+		  printf(" %08X", microcode.code[ptr]);
+		}
+		printf("\n");
+*/
 		free(result);
 	}
 
@@ -143,6 +152,12 @@ void parseFile(const char *input, const char *output)
 
 	// Post process label occurrences
 	processOccurrence();
+
+    for (i = 0; i < microcode.ptr; ++i)
+    {
+        uint32_t src = microcode.code[i];
+        printf("0x%08X\n", src);
+    }
 
 	// Write results to output
 	out_file = fopen(output, "w");
@@ -215,14 +230,16 @@ isa_op_code* parseLine(char *line)
 	// If a define is not recognized, try to parse a label
 	if (i == isa_instr_count)
 	{
-		for (i = 0; i < label_count; ++i)
-			if (strncmp(label_list[i].name, token, 
-					strlen(label_list[i].name)) == 0)
+		for (i = 0; i < label_count; ++i) {
+		 size_t l = strlen(label_list[i].name);
+		  if (strncmp(label_list[i].name, token,
+					l) == 0 && token[l] == ':')
 				break;
+		}
 
 		if (i == label_count)
 		{
-			WARNING("unrecognized instruciton '%s'", token);
+			WARNING("unrecognized instruction '%s'", token);
 		}
 		else
 		{
@@ -270,7 +287,7 @@ isa_op_code* parseLine(char *line)
 		CASE_PARSE(SOPC)
 		CASE_PARSE(SOPP)
 		CASE_PARSE(SMRD)
-		CASE_PARSE(VOP2)
+//		CASE_PARSE(VOP2)
 		CASE_PARSE(VOP1) // VOP3a/b support still needed
 		//CASE_PARSE(VOPC)
 		CASE_PARSE(VOP3a)
@@ -281,8 +298,18 @@ isa_op_code* parseLine(char *line)
 		CASE_PARSE(MIMG)
 		#undef CASE_PARSE
 
+		case VOP2:
+		  if (argc == 4)
+            result = parseAlternate(isa_instr_list[i], argc, args);
+          else
+            result = parseVOP2(isa_instr_list[i], argc, args);
+            break;
+
 		case VOPC:
+		  if (strcmp(args[0], "vcc"))
 			result = parseAlternate(isa_instr_list[i], argc, args);
+		  else
+            result = parseVOPC(isa_instr_list[i], argc, args);
 			break;
 		default:
 			WARNING("unsupported encoding type for instruction '%s'", 

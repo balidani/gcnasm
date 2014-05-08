@@ -28,9 +28,15 @@ isa_op_code* parseVOPC(isa_instr instr, int argc, char **args)
 	if (argc < 2)
 		ERROR("number of passed operands is too low");
 
-	// Setup arguments
-	src0_str	= args[0];
-	vsrc1_str	= args[1];
+	if (!strcmp(args[0], "vcc")) {
+      // Setup arguments
+      src0_str    = args[1];
+      vsrc1_str   = args[2];
+	} else {
+	    // Setup arguments
+	    src0_str    = args[0];
+	    vsrc1_str   = args[1];
+	}
 
 	// Parse operands
 	op_code->code = instr.op_code;

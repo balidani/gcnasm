@@ -57,11 +57,11 @@ static char preProcessOp(char **op_str)
  */
 isa_op_code* parseVOP3b(isa_instr instr, int argc, char **args)
 {
-	char *vdst_str, *sdst_str, *src0_str, *src1_str, *src2_str;
+	char *vdst_str = NULL, *sdst_str = NULL, *src0_str, *src1_str, *src2_str;
 	char omod_value, neg_value, tag_result;
 	int i, j;
 
-	isa_operand *vdst_op, *sdst_op,		// ISA operand structs
+	isa_operand *vdst_op = NULL, *sdst_op = NULL,		// ISA operand structs
 		*src0_op, *src1_op, *src2_op; 			
 	isa_op_code *op_code;				// Generated opcode struct
 
@@ -70,15 +70,21 @@ isa_op_code* parseVOP3b(isa_instr instr, int argc, char **args)
 	omod_value = 0;
 	neg_value = 0;
 
-	if (argc < 4)
+	if (argc < 3)
 		ERROR("number of passed operands is too low");
 
-	// Setup arguments
-	vdst_str	= args[0];
-	sdst_str	= args[1];
-	src0_str	= args[2];
-	src1_str	= args[3];
-
+	if (argc < 4) {
+      // Setup arguments
+      vdst_str  = args[0];
+      src0_str  = args[1];
+      src1_str  = args[2];
+	} else {
+	  // Setup arguments
+	  vdst_str	= args[0];
+	  sdst_str	= args[1];
+	  src0_str	= args[2];
+	  src1_str	= args[3];
+	}
 	if (argc > 4)
 		src2_str = args[4];
 	
@@ -87,18 +93,22 @@ isa_op_code* parseVOP3b(isa_instr instr, int argc, char **args)
 	op_code->literal = 0;
 	op_code->literal_set = 1;
 
-	// VDST
-	vdst_op = parseOperand(vdst_str);
+	if (vdst_str) {
+	  // VDST
+	  vdst_op = parseOperand(vdst_str);
 
-	op_code->code |= vdst_op->op_code;
+	  op_code->code |= vdst_op->op_code;
+	}
 
-	// SDST
-	sdst_op = parseOperand(sdst_str);
+	if (sdst_str) {
+	  // SDST
+	  sdst_op = parseOperand(sdst_str);
 
-	if (sdst_op->op_type.type >= SDST_OPERAND_TRESHOLD)
-		ERROR("incorrect value for SDST operand");
+	  if (sdst_op->op_type.type >= SDST_OPERAND_TRESHOLD)
+	    ERROR("incorrect value for SDST operand");
 
-	op_code->code |= (sdst_op->op_code << 8);
+	  op_code->code |= (sdst_op->op_code << 8);
+	}
 
 	// SRC0
 	tag_result = preProcessOp(&src0_str);
