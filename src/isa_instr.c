@@ -690,7 +690,7 @@ const isa_instr isa_instr_list[] =
 	{"DS_AND_SRC2_B64",				0xDB240000, DS, NONE, 0},
 	{"DS_OR_SRC2_B64",				0xDB280000, DS, NONE, 0},
 	{"DS_XOR_SRC2_B64",				0xDB2C0000, DS, NONE, 0},
-	{"DS_WRITE_SRC2_B64",			0xDB300000, DS, NONE, 0},
+	{"DS_WRITE_SRC2_B64",			0xDB340000, DS, NONE, 0},
 	{"DS_MIN_SRC2_F64",				0xDB480000, DS, NONE, 0},
 	{"DS_MAX_SRC2_F64",				0xDB4C0000, DS, NONE, 0},
 
